@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardian Dashboard - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 100000;
+        }
+
+        .profile-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #8e44ad, #9b59b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.4);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 280px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            z-index: 99999;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeInDown 0.3s ease;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .guardian-id {
+            background: rgba(142, 68, 173, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            border-left: 3px solid #8e44ad;
+        }
+
+        .guardian-id-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 3px;
+        }
+
+        .guardian-id-value {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #8e44ad;
+        }
+
+        .profile-menu {
+            list-style: none;
+        }
+
+        .profile-menu li {
+            margin-bottom: 8px;
+        }
+
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .profile-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-menu .logout {
+            color: #e74c3c;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 10px;
+            padding-top: 15px;
+        }
+
+        .profile-menu .logout:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #8e44ad, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(142, 68, 173, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            font-size: 1rem;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: rgba(142, 68, 173, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border-left: 4px solid #8e44ad;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #8e44ad;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .feature-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">SkillForge</div>
+        <div class="user-info">
+            <div class="profile-circle" onclick="toggleProfileDropdown()" id="profileCircle">GU</div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-header">
+                    <div class="profile-name" id="profileName">Guardian Name</div>
+                    <div class="profile-email" id="profileEmail">guardian@demo.com</div>
+                    <div class="guardian-id">
+                        <div class="guardian-id-label">Guardian ID</div>
+                        <div class="guardian-id-value" id="guardianId">GUA-2024-001</div>
+                    </div>
+                </div>
+                <ul class="profile-menu">
+                    <li><a href="my-profile.html">👤 My Profile</a></li>
+                    <li><a href="edit-profile.html">✏️ Edit Profile</a></li>
+                    <li><a href="link-student.html">🔗 Link Student</a></li>
+                    <li><a href="settings.html">⚙️ Settings</a></li>
+                    <li><a href="#" onclick="logout()" class="logout">🚪 Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1 class="welcome-title">Guardian Dashboard</h1>
+            <p class="welcome-subtitle">Monitor and support your child's learning journey</p>
+        </div>
+
+        <!-- Student Selector -->
+        <div
+            style="text-align: center; margin-bottom: 30px; padding: 20px; background: rgba(142, 68, 173, 0.15); border-radius: 15px; border: 1px solid rgba(142, 68, 173, 0.3);">
+            <label style="font-weight: bold; margin-right: 15px;">Select Child:</label>
+            <select id="studentSelector"
+                style="padding: 10px 20px; border-radius: 10px; background: rgba(0,0,0,0.5); color: white; border: 1px solid #8e44ad; font-size: 1rem;">
+                <option value="">-- Loading students --</option>
+            </select>
+        </div>
+
+        <div class="features-grid">
+            <div onclick="goToFeature('child-progress.html')" class="feature-card" style="cursor:pointer;">
+                <span class="feature-icon">📊</span>
+                <h3 class="feature-title">Child's Progress</h3>
+                <p class="feature-desc">Track your child's academic performance and learning milestones</p>
+                </a>
+
+                <a href="activity-reports.html" class="feature-card">
+                    <span class="feature-icon">📋</span>
+                    <h3 class="feature-title">Activity Reports</h3>
+                    <p class="feature-desc">View detailed reports of daily learning activities and time spent</p>
+            </div>
+
+            <div onclick="goToFeature('grade-reports.html')" class="feature-card" style="cursor:pointer;">
+                <span class="feature-icon">🎯</span>
+                <h3 class="feature-title">Grade Reports</h3>
+                <p class="feature-desc">Access comprehensive grade reports and assessment results</p>
+            </div>
+
+            <div onclick="goToFeature('communication.html')" class="feature-card" style="cursor:pointer;">
+                <span class="feature-icon">💬</span>
+                <h3 class="feature-title">Teacher Communication</h3>
+                <p class="feature-desc">Connect with mentors and receive updates about your child's progress</p>
+            </div>
+
+            <div onclick="goToFeature('learning-goals.html')" class="feature-card" style="cursor:pointer;">
+                <span class="feature-icon">🎯</span>
+                <h3 class="feature-title">Learning Goals</h3>
+                <p class="feature-desc">Set and monitor learning objectives and achievement targets</p>
+            </div>
+
+            <div onclick="goToFeature('screen-time.html')" class="feature-card" style="cursor:pointer;">
+                <span class="feature-icon">⏰</span>
+                <h3 class="feature-title">Screen Time Control</h3>
+                <p class="feature-desc">Manage and monitor your child's learning screen time and breaks</p>
+            </div>
+        </div>
+
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-number">85%</div>
+                <div class="stat-label">Overall Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2.5h</div>
+                <div class="stat-label">Daily Study Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">A-</div>
+                <div class="stat-label">Current Grade</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Active Courses</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        // Generate guardian ID and initials
+        const userEmail = localStorage.getItem('userEmail') || 'guardian@demo.com';
+        const userName = userEmail.split('@')[0];
+        const initials = userName.substring(0, 2).toUpperCase();
+        const guardianId = 'GUA-2024-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+        // Update profile info
+        document.getElementById('profileCircle').textContent = initials;
+        document.getElementById('profileName').textContent = userName.charAt(0).toUpperCase() + userName.slice(1);
+        document.getElementById('profileEmail').textContent = userEmail;
+        document.getElementById('guardianId').textContent = guardianId;
+
+        // Store guardian ID
+        localStorage.setItem('guardianId', guardianId);
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const profileCircle = document.getElementById('profileCircle');
+
+            if (!dropdown.contains(event.target) && !profileCircle.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // Navigate to feature with studentId
+        function goToFeature(page) {
+            const selector = document.getElementById('studentSelector');
+            const studentId = selector.value;
+
+            if (!studentId) {
+                alert('Please select a child first');
+                return;
+            }
+
+            window.location.href = `${page}?studentId=${studentId}`;
+        }
+
+        // Load approved students
+        async function loadStudents() {
+            const guardianId = localStorage.getItem('userId');
+            const selector = document.getElementById('studentSelector');
+
+            try {
+                const response = await fetch(`http://localhost:8080/guardian/students/${guardianId}`);
+                const data = await response.json();
+
+                if (data.data && data.data.length > 0) {
+                    selector.innerHTML = data.data.map(student =>
+                        `<option value="${student.id}">${student.email.split('@')[0]} (${student.studentCode})</option>`
+                    ).join('');
+                } else {
+                    selector.innerHTML = '<option value="">-- No students linked --</option>';
+                }
+            } catch (error) {
+                console.error('Failed to load students:', error);
+                selector.innerHTML = '<option value="">-- Error loading --</option>';
+            }
+        }
+
+        // Load students on page load
+        loadStudents();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching Analytics - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(243, 156, 18, 0.05));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(230, 126, 34, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #e67e22, #f39c12);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(230, 126, 34, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #e67e22;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-sublabel {
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.7;
+        }
+
+        .insights-section {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .insights-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #e67e22;
+        }
+
+        .insight-item {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #e67e22;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            margin-top: 20px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="mentor-dashboard.html" class="logo">SkillForge Mentor</a>
+    </header>
+
+    <div class="main-container">
+        <a href="mentor-dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">Teaching Analytics</h1>
+        <p style="opacity: 0.7; margin-bottom: 20px;">High-level insights into your teaching performance</p>
+
+        <div id="statsContainer" class="stats-grid">
+            <div class="loading">Loading analytics...</div>
+        </div>
+
+        <div class="insights-section">
+            <h2 class="insights-title">📈 Quick Insights</h2>
+            <div id="insightsContainer">
+                <div class="chart-placeholder">
+                    Detailed charts and trends coming soon...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const mentorId = localStorage.getItem('userId');
+
+        async function loadAnalytics() {
+            const container = document.getElementById('statsContainer');
+
+            try {
+                const response = await fetch(`http://localhost:8080/mentor/analytics/${mentorId}`);
+                const data = await response.json();
+                const analytics = data.data;
+
+                container.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value">${analytics.totalStudents}</div>
+                        <div class="stat-label">Total Students</div>
+                        <div class="stat-sublabel">Enrolled across all courses</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value">${analytics.averageProgress}%</div>
+                        <div class="stat-label">Avg Progress</div>
+                        <div class="stat-sublabel">Student completion rate</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value">${analytics.averageRating}</div>
+                        <div class="stat-label">Avg Rating</div>
+                        <div class="stat-sublabel">Course satisfaction score</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value">${analytics.totalCourses}</div>
+                        <div class="stat-label">Total Courses</div>
+                        <div class="stat-sublabel">Courses created by you</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">🤖</div>
+                        <div class="stat-value">${analytics.aiTutorUsage}</div>
+                        <div class="stat-label">AI Tutor Usage</div>
+                        <div class="stat-sublabel">Student AI interactions</div>
+                    </div>
+                `;
+
+                // Generate insights
+                const insightsContainer = document.getElementById('insightsContainer');
+                let insights = [];
+
+                if (analytics.averageProgress < 50) {
+                    insights.push('💡 Average progress is below 50%. Consider adding more engaging content or checking-in with students.');
+                }
+                if (analytics.averageRating >= 4.5) {
+                    insights.push('🎉 Excellent ratings! Your courses are highly appreciated by students.');
+                }
+                if (analytics.totalStudents > 50) {
+                    insights.push('🚀 You have a strong student base! Consider creating advanced courses.');
+                }
+                if (analytics.totalCourses < 3) {
+                    insights.push('💼 Consider creating more courses to reach a wider audience.');
+                }
+
+                if (insights.length > 0) {
+                    insightsContainer.innerHTML = insights.map(insight =>
+                        `<div class="insight-item">${insight}</div>`
+                    ).join('');
+                } else {
+                    insightsContainer.innerHTML = `
+                        <div class="insight-item">
+                            ✅ Everything looks good! Keep up the great work.
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="loading">Failed to load analytics</div>';
+            }
+        }
+
+        // Load analytics on page load
+        document.addEventListener('DOMContentLoaded', loadAnalytics);
+    </script>
+</body>
+
+</html>

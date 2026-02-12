@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Communication - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #8e44ad, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .concern-alert {
+            background: rgba(231, 76, 60, 0.15);
+            border-left: 4px solid #e74c3c;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .concern-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .concern-type {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .academic {
+            background: rgba(52, 152, 219, 0.3);
+            border: 1px solid #3498db;
+        }
+
+        .behavioral {
+            background: rgba(230, 126, 34, 0.3);
+            border: 1px solid #e67e22;
+        }
+
+        .concern-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-noted {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .btn-discuss {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+            border: 1px solid #f39c12;
+        }
+
+        .btn-call {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .notes-section {
+            margin: 30px 0;
+        }
+
+        .note-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #8e44ad;
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .note-type {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .note-content {
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="guardian-dashboard.html" class="logo">SkillForge Guardian</a>
+    </header>
+
+    <div class="main-container">
+        <a href="guardian-dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">Teacher Communication</h1>
+        <p style="opacity: 0.7; margin-bottom: 20px;">Structured feedback from mentors</p>
+
+        <div id="concernsSection"></div>
+
+        <div class="notes-section">
+            <h2 style="font-size: 1.5rem; margin-bottom: 20px; color: #8e44ad;">Mentor Notes & Summaries</h2>
+            <div id="notesList">
+                <div class="loading">Loading notes...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const guardianId = localStorage.getItem('userId');
+        const studentId = new URLSearchParams(window.location.search).get('studentId');
+
+        async function loadCommunication() {
+            if (!studentId) {
+                alert('No student selected');
+                window.location.href = 'guardian-dashboard.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/guardian/mentor-notes/${guardianId}/${studentId}`);
+                const data = await response.json();
+
+                if (!data.data) {
+                    alert(data.message);
+                    return;
+                }
+
+                renderConcerns(data.data.concerns);
+                renderNotes(data.data.notes);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('notesList').innerHTML = '<div class="loading">Failed to load communication</div>';
+            }
+        }
+
+        function renderConcerns(concerns) {
+            const pending = concerns.filter(c => c.status === 'PENDING');
+            if (pending.length === 0) {
+                document.getElementById('concernsSection').innerHTML = '';
+                return;
+            }
+
+            document.getElementById('concernsSection').innerHTML = `
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px; color: #e74c3c;">⚠️ Flagged Concerns (${pending.length})</h2>
+                ${pending.map(concern => `
+                    <div class="concern-alert" id="concern-${concern.id}">
+                        <div class="concern-header">
+                            <span class="concern-type ${concern.concernType.toLowerCase()}">${concern.concernType}</span>
+                            <span>${new Date(concern.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <div class="concern-actions">
+                            <button class="action-btn btn-noted" onclick="acknowledge(${concern.id}, 'NOTED')">✓ Noted</button>
+                            <button class="action-btn btn-discuss" onclick="acknowledge(${concern.id}, 'WILL_DISCUSS')">💬 Will Discuss</button>
+                            <button class="action-btn btn-call" onclick="acknowledge(${concern.id}, 'NEEDS_CALL')">📞 Needs Call</button>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function renderNotes(notes) {
+            if (!notes || notes.length === 0) {
+                document.getElementById('notesList').innerHTML = '<div style="opacity: 0.6; text-align: center; padding: 40px;">No notes from mentors yet</div>';
+                return;
+            }
+
+            document.getElementById('notesList').innerHTML = notes.map(note => `
+                <div class="note-card">
+                    <div class="note-header">
+                        <div>
+                            <strong>${note.noteType === 'SUMMARY' ? '📋 Summary' : '⚠️ Concern'}</strong>
+                        </div>
+                        <div class="note-type">${new Date(note.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    <div class="note-content">${note.content}</div>
+                </div>
+            `).join('');
+        }
+
+        async function acknowledge(concernId, response) {
+            try {
+                const res = await fetch(`http://localhost:8080/guardian/acknowledge-concern/${concernId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ response })
+                });
+
+                if (res.ok) {
+                    document.getElementById(`concern-${concernId}`).style.opacity = '0.5';
+                    setTimeout(() => loadCommunication(), 500);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Failed to acknowledge concern');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCommunication);
+    </script>
+</body>
+
+</html>

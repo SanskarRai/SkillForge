@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Goals - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #8e44ad, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .goal-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #8e44ad;
+        }
+
+        .feasibility {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .high {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .medium {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
+
+        .low {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="guardian-dashboard.html" class="logo">SkillForge Guardian</a>
+    </header>
+
+    <div class="main-container">
+        <a href="guardian-dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">Learning Goals</h1>
+        <p style="opacity: 0.7; margin-bottom: 20px;">SMART goals with feasibility tracking</p>
+
+        <div id="goalsList">
+            <div class="loading">Loading goals...</div>
+        </div>
+    </div>
+
+    <script>
+        const studentId = new URLSearchParams(window.location.search).get('studentId');
+
+        async function loadGoals() {
+            document.getElementById('goalsList').innerHTML = `
+                <div class="goal-card">
+                    <h3>📋 Sample Goal: Master Python Basics</h3>
+                    <p style="opacity: 0.8; margin: 10px 0;">Complete Python fundamentals course by end of month</p>
+                    <div style="margin-top: 15px;">
+                        <span class="feasibility high">Feasibility: High (85%)</span>
+                    </div>
+                    <p style="margin-top: 15px; opacity: 0.7; font-size: 0.9rem;">
+                        <strong>Outcome:</strong> Score 90%+ on final assessment<br>
+                        <strong>Time Commitment:</strong> 5 hours/week
+                    </p>
+                </div>
+                <div style="opacity: 0.6; text-align: center; padding: 40px;">
+                    Feature coming soon! Goals will be tracked here with feasibility scoring and slippage warnings.
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadGoals);
+    </script>
+</body>
+
+</html>

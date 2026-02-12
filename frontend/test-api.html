@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>API Test</title>
+</head>
+
+<body>
+    <h1>API Test Page</h1>
+    <button onclick="testAPI()">Test /courses API</button>
+    <pre id="output"></pre>
+
+    <script>
+        async function testAPI() {
+            const output = document.getElementById('output');
+            output.textContent = 'Testing...';
+
+            try {
+                const response = await fetch('http://localhost:8080/courses');
+                const data = await response.json();
+
+                output.textContent = JSON.stringify(data, null, 2);
+
+                console.log('Response:', data);
+                if (data.data && data.data.courses) {
+                    console.log(`Found ${data.data.courses.length} courses`);
+                    data.data.courses.forEach(c => {
+                        console.log(`- ${c.title} (Status: ${c.status}, Grade: ${c.targetGrade || 'All'})`);
+                    });
+                }
+            } catch (error) {
+                output.textContent = 'ERROR: ' + error.message;
+                console.error(error);
+            }
+        }
+
+        // Auto-run on load
+        window.onload = () => testAPI();
+    </script>
+</body>
+
+</html>

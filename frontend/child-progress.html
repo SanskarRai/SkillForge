@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child's Progress - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.1));
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .alert-banner.show {
+            display: block;
+        }
+
+        /* Top Stats */
+        .top-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .velocity-good {
+            color: #2ecc71;
+        }
+
+        .velocity-ok {
+            color: #f39c12;
+        }
+
+        .velocity-slow {
+            color: #e74c3c;
+        }
+
+        /* Consistency Circle */
+        .consistency-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            position: relative;
+        }
+
+        /* Strengths & Weaknesses */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .insight-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .insight-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .strength-item {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 3px solid #2ecc71;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .weakness-item {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 3px solid #e74c3c;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        /* Course Progress */
+        .courses-section {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .course-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="guardian-dashboard.html" class="logo">SkillForge Guardian</a>
+    </header>
+
+    <div class="main-container">
+        <a href="guardian-dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">Child's Learning Progress</h1>
+        <p style="opacity: 0.7; margin-bottom: 20px;">Smart insights into your child's learning journey</p>
+
+        <!-- Drop-off Alert -->
+        <div id="alertBanner" class="alert-banner">
+            <strong>⚠️ Engagement Alert:</strong> Your child hasn't accessed any courses in the last 5 days.
+        </div>
+
+        <!-- Top Stats -->
+        <div class="top-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="avgProgress">0%</div>
+                <div class="stat-label">Average Progress</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="velocity">Loading...</div>
+                <div class="stat-label">Learning Velocity</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="consistency-circle" id="consistencyCircle">
+                    <span id="consistencyScore">0</span>
+                </div>
+                <div class="stat-label">Consistency Score</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-value" id="totalHours">0h</div>
+                <div class="stat-label">Total Study Time</div>
+            </div>
+        </div>
+
+        <!-- Strengths & Weaknesses -->
+        <div class="insights-grid">
+            <div class="insight-box">
+                <div class="insight-title">
+                    <span>💪</span>
+                    <span>Strengths</span>
+                </div>
+                <div id="strengthsList">
+                    <div style="opacity: 0.6;">No strengths identified yet</div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="insight-title">
+                    <span>📈</span>
+                    <span>Areas to Improve</span>
+                </div>
+                <div id="weaknessesList">
+                    <div style="opacity: 0.6;">No areas identified yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course-wise Progress -->
+        <div id="coursesSection" class="courses-section">
+            <h2 class="section-title">Course-wise Progress</h2>
+            <div id="coursesList">
+                <div class="loading">Loading courses...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const guardianId = localStorage.getItem('userId');
+        const studentId = new URLSearchParams(window.location.search).get('studentId');
+
+        async function loadProgress() {
+            if (!studentId) {
+                alert('No student selected');
+                window.location.href = 'guardian-dashboard.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/guardian/child-progress/${guardianId}/${studentId}`);
+                const data = await response.json();
+
+                if (!data.data) {
+                    alert(data.message);
+                    return;
+                }
+
+                const progress = data.data;
+
+                // Update top stats
+                document.getElementById('avgProgress').textContent = progress.averageProgress + '%';
+                document.getElementById('totalHours').textContent = progress.totalHoursSpent + 'h';
+
+                // Learning velocity
+                const velocityEl = document.getElementById('velocity');
+                velocityEl.textContent = progress.learningVelocity;
+                if (progress.learningVelocity === 'Faster than expected') {
+                    velocityEl.className = 'stat-value velocity-good';
+                } else if (progress.learningVelocity === 'On track') {
+                    velocityEl.className = 'stat-value velocity-ok';
+                } else {
+                    velocityEl.className = 'stat-value velocity-slow';
+                }
+
+                // Consistency score
+                const score = progress.consistencyScore;
+                document.getElementById('consistencyScore').textContent = score;
+                const circle = document.getElementById('consistencyCircle');
+                if (score >= 80) {
+                    circle.style.background = 'conic-gradient(#2ecc71 ' + score + '%, rgba(255,255,255,0.1) 0)';
+                } else if (score >= 50) {
+                    circle.style.background = 'conic-gradient(#f39c12 ' + score + '%, rgba(255,255,255,0.1) 0)';
+                } else {
+                    circle.style.background = 'conic-gradient(#e74c3c ' + score + '%, rgba(255,255,255,0.1) 0)';
+                }
+
+                // Drop-off alert
+                if (progress.hasDropOff) {
+                    document.getElementById('alertBanner').classList.add('show');
+                }
+
+                // Strengths
+                if (progress.strengths && progress.strengths.length > 0) {
+                    document.getElementById('strengthsList').innerHTML = progress.strengths.map(s =>
+                        `<div class="strength-item">✓ ${s}</div>`
+                    ).join('');
+                }
+
+                // Weaknesses
+                if (progress.weaknesses && progress.weaknesses.length > 0) {
+                    document.getElementById('weaknessesList').innerHTML = progress.weaknesses.map(w =>
+                        `<div class="weakness-item">! ${w}</div>`
+                    ).join('');
+                }
+
+                // Courses
+                if (progress.courses && progress.courses.length > 0) {
+                    document.getElementById('coursesList').innerHTML = progress.courses.map(course => `
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-title">Course ID: ${course.courseId}</div>
+                                <div style="font-size: 1.2rem; font-weight: bold; color: #3498db;">${course.progressPercentage}%</div>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${course.progressPercentage}%"></div>
+                            </div>
+                            <div class="course-meta">
+                                <span>📚 ${course.lessonsCompleted} lessons completed</span>
+                                <span>⏱️ ${course.hoursSpent} hours spent</span>
+                                <span>📊 Avg Score: ${course.averageScore.toFixed(1)}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('coursesList').innerHTML = '<div class="loading">Failed to load progress</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProgress);
+    </script>
+</body>
+
+</html>

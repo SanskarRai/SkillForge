@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Reports - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #8e44ad, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        /* Key Insights */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .insight-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .insight-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .insight-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #8e44ad;
+        }
+
+        /* Self-Comparison Box */
+        .comparison-box {
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.2), rgba(155, 89, 182, 0.1));
+            border-left: 4px solid #8e44ad;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .comparison-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .comparison-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .comparison-stat {
+            text-align: center;
+        }
+
+        .comparison-stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .comparison-stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* Concept Mastery */
+        .mastery-section {
+            margin: 30px 0;
+        }
+
+        .mastery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .mastery-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mastery-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .concept-tag {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+
+        .concept-strong {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+        }
+
+        .concept-improving {
+            background: rgba(243, 156, 18, 0.2);
+            border: 1px solid #f39c12;
+        }
+
+        .concept-needswork {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+        }
+
+        /* Grade List */
+        .grades-section {
+            margin: 30px 0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #8e44ad;
+        }
+
+        .grade-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #8e44ad;
+        }
+
+        .grade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .grade-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .grade-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .mentor-remark {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="guardian-dashboard.html" class="logo">SkillForge Guardian</a>
+    </header>
+
+    <div class="main-container">
+        <a href="guardian-dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">Grade Reports with Context</h1>
+        <p style="opacity: 0.7; margin-bottom: 20px;">Understanding learning progress, not just scores</p>
+
+        <!-- Key Insights -->
+        <div class="insights-grid">
+            <div class="insight-card">
+                <div class="insight-icon">📈</div>
+                <div class="insight-label">Score Trend</div>
+                <div class="insight-value" id="scoreTrend">Loading...</div>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-icon">⚖️</div>
+                <div class="insight-label">Effort vs Outcome</div>
+                <div class="insight-value" id="effortInsight">Loading...</div>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-icon">🎯</div>
+                <div class="insight-label">Average Score</div>
+                <div class="insight-value" id="avgScore">0%</div>
+            </div>
+        </div>
+
+        <!-- Self-Comparison -->
+        <div class="comparison-box" id="comparisonBox">
+            <div class="comparison-title" id="comparisonText">Loading comparison...</div>
+            <div class="comparison-stats">
+                <div class="comparison-stat">
+                    <div class="comparison-stat-value" id="latestScore">0</div>
+                    <div class="comparison-stat-label">Latest Score</div>
+                </div>
+                <div class="comparison-stat">
+                    <div class="comparison-stat-value" id="improvementValue">0</div>
+                    <div class="comparison-stat-label">Improvement</div>
+                </div>
+                <div class="comparison-stat">
+                    <div class="comparison-stat-value" id="historicalAvg">0</div>
+                    <div class="comparison-stat-label">Historical Average</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Concept Mastery -->
+        <div class="mastery-section">
+            <h2 class="section-title">Concept Mastery Breakdown</h2>
+            <div class="mastery-grid">
+                <div class="mastery-box">
+                    <div class="mastery-title">💪 Strong Concepts</div>
+                    <div id="strongConcepts">
+                        <div style="opacity: 0.6;">No data available</div>
+                    </div>
+                </div>
+
+                <div class="mastery-box">
+                    <div class="mastery-title">📈 Improving Concepts</div>
+                    <div id="improvingConcepts">
+                        <div style="opacity: 0.6;">No data available</div>
+                    </div>
+                </div>
+
+                <div class="mastery-box">
+                    <div class="mastery-title">⚠️ Needs Work</div>
+                    <div id="needsWorkConcepts">
+                        <div style="opacity: 0.6;">No data available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Grades -->
+        <div class="grades-section">
+            <h2 class="section-title">Grade History</h2>
+            <div id="gradesList">
+                <div class="loading">Loading grades...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const guardianId = localStorage.getItem('userId');
+        const studentId = new URLSearchParams(window.location.search).get('studentId');
+
+        async function loadGradeReports() {
+            if (!studentId) {
+                alert('No student selected');
+                window.location.href = 'guardian-dashboard.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/guardian/grade-reports/${guardianId}/${studentId}`);
+                const data = await response.json();
+
+                if (!data.data) {
+                    alert(data.message);
+                    return;
+                }
+
+                const reports = data.data;
+
+                // Display insights
+                document.getElementById('scoreTrend').textContent = reports.scoreTrend;
+                document.getElementById('avgScore').textContent = Math.round(reports.averagePercentage) + '%';
+
+                if (reports.effortAnalysis) {
+                    document.getElementById('effortInsight').textContent = reports.effortAnalysis.insight;
+                }
+
+                // Self-comparison
+                if (reports.selfComparison) {
+                    document.getElementById('comparisonText').textContent = reports.selfComparison.comparison;
+                    document.getElementById('latestScore').textContent = reports.selfComparison.latestScore;
+                    document.getElementById('improvementValue').textContent =
+                        (reports.selfComparison.improvement > 0 ? '+' : '') + reports.selfComparison.improvement;
+                    document.getElementById('historicalAvg').textContent = reports.selfComparison.historicalAvg;
+                }
+
+                // Concept mastery
+                if (reports.conceptMastery) {
+                    renderConcepts('strongConcepts', reports.conceptMastery.strong, 'concept-strong');
+                    renderConcepts('improvingConcepts', reports.conceptMastery.improving, 'concept-improving');
+                    renderConcepts('needsWorkConcepts', reports.conceptMastery.needsWork, 'concept-needswork');
+                }
+
+                // Render grades
+                renderGrades(reports.grades);
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('gradesList').innerHTML = '<div class="loading">Failed to load grade reports</div>';
+            }
+        }
+
+        function renderConcepts(elementId, concepts, className) {
+            const container = document.getElementById(elementId);
+            if (!concepts || concepts.length === 0) {
+                container.innerHTML = '<div style="opacity: 0.6;">None identified</div>';
+                return;
+            }
+
+            container.innerHTML = concepts.map(concept =>
+                `<span class="concept-tag ${className}">${concept}</span>`
+            ).join('');
+        }
+
+        function renderGrades(grades) {
+            if (!grades || grades.length === 0) {
+                document.getElementById('gradesList').innerHTML = '<div style="opacity: 0.6; text-align: center; padding: 40px;">No grades found</div>';
+                return;
+            }
+
+            document.getElementById('gradesList').innerHTML = grades.map(grade => {
+                const gradedDate = grade.gradedAt ? new Date(grade.gradedAt).toLocaleDateString() : 'Pending';
+                return `
+                    <div class="grade-card">
+                        <div class="grade-header">
+                            <div>
+                                <div style="font-size: 1.1rem; font-weight: bold;">Assignment ID: ${grade.assignmentId}</div>
+                                <div style="opacity: 0.7; font-size: 0.9rem; margin-top: 5px;">${gradedDate}</div>
+                            </div>
+                            <div class="grade-score">${Math.round(grade.percentage)}%</div>
+                        </div>
+                        <div class="grade-meta">
+                            <div>📊 Score: ${grade.score}/${grade.maxScore}</div>
+                            ${grade.effortScore ? `<div>💪 Effort: ${grade.effortScore}/100</div>` : ''}
+                            ${grade.conceptMastery ? `<div>🎯 Concept: ${grade.conceptMastery}</div>` : ''}
+                        </div>
+                        ${grade.mentorRemarks ? `
+                            <div class="mentor-remark">
+                                <strong>💬 Mentor Remarks:</strong><br>
+                                ${grade.mentorRemarks}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadGradeReports);
+    </script>
+</body>
+
+</html>

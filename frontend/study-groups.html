@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Groups - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .back-btn, .create-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .create-btn {
+            background: #2ecc71;
+        }
+
+        .container {
+            padding: 30px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #2ecc71, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab.active {
+            background: #2ecc71;
+            border-color: #2ecc71;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .group-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .group-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .group-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .group-subject {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .group-status {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-open {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .status-full {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .status-joined {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+        }
+
+        .group-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .meta-label {
+            opacity: 0.7;
+        }
+
+        .meta-value {
+            font-weight: 500;
+        }
+
+        .group-description {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .group-members {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .member-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .group-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .join-btn {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .chat-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .leave-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: 600px;
+        }
+
+        .chat-sidebar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-main {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 70%;
+        }
+
+        .message.own {
+            background: #3498db;
+            margin-left: auto;
+        }
+
+        .message.other {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .message-sender {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .send-btn {
+            padding: 12px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-select option {
+            background: #000;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .chat-sidebar {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">SkillForge</div>
+        <div class="header-actions">
+            <button class="create-btn" onclick="openCreateModal()">+ Create Group</button>
+            <a href="student-dashboard.html" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Study Groups</h1>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="discover">Discover Groups</button>
+            <button class="tab" data-tab="my-groups">My Groups</button>
+            <button class="tab" data-tab="chat">Group Chat</button>
+        </div>
+
+        <div class="content-section active" id="discover">
+            <div class="groups-grid" id="discoverGrid">
+                <!-- Groups will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="content-section" id="my-groups">
+            <div class="groups-grid" id="myGroupsGrid">
+                <!-- My groups will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="content-section" id="chat">
+            <div class="chat-container">
+                <div class="chat-sidebar">
+                    <h3 style="margin-bottom: 15px;">Active Groups</h3>
+                    <div id="chatGroupsList">
+                        <!-- Chat groups list -->
+                    </div>
+                </div>
+                <div class="chat-main">
+                    <div class="chat-header">
+                        <h3 id="chatGroupName">Select a group to start chatting</h3>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages will appear here -->
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" class="message-input" id="messageInput" placeholder="Type your message...">
+                        <button class="send-btn" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Study Group</h3>
+                <button class="close-btn" onclick="closeModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form id="createGroupForm">
+                <div class="form-group">
+                    <label class="form-label">Group Name</label>
+                    <input type="text" class="form-input" id="groupName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject</label>
+                    <select class="form-select" id="groupSubject" required>
+                        <option value="">Select Subject</option>
+                        <option value="mathematics">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="programming">Programming</option>
+                        <option value="arts">Arts</option>
+                        <option value="languages">Languages</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="groupDescription" placeholder="Describe your study group..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Max Members</label>
+                    <select class="form-select" id="maxMembers">
+                        <option value="5">5 members</option>
+                        <option value="10">10 members</option>
+                        <option value="15">15 members</option>
+                        <option value="20">20 members</option>
+                    </select>
+                </div>
+                <button type="submit" class="action-btn join-btn" style="width: 100%;">Create Group</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let studyGroups = [
+            {
+                id: 1,
+                name: "Python Beginners",
+                subject: "Programming",
+                description: "Learning Python fundamentals together. We meet twice a week to solve coding challenges.",
+                members: 8,
+                maxMembers: 15,
+                status: "open",
+                joined: false,
+                memberAvatars: ["PY", "JS", "AL", "MK", "SR", "LM", "KJ", "RT"]
+            },
+            {
+                id: 2,
+                name: "Calculus Study Circle",
+                subject: "Mathematics",
+                description: "Advanced calculus problem solving and exam preparation.",
+                members: 12,
+                maxMembers: 12,
+                status: "full",
+                joined: false,
+                memberAvatars: ["CA", "MA", "TH", "ST", "UD", "EN", "TS", "GR", "OU", "PS", "FO", "RM"]
+            },
+            {
+                id: 3,
+                name: "Spanish Conversation",
+                subject: "Languages",
+                description: "Practice Spanish speaking skills in a friendly environment.",
+                members: 6,
+                maxMembers: 10,
+                status: "joined",
+                joined: true,
+                memberAvatars: ["ES", "SP", "AN", "IS", "H", "CO"]
+            },
+            {
+                id: 4,
+                name: "Chemistry Lab Partners",
+                subject: "Science",
+                description: "Collaborate on chemistry experiments and share lab reports.",
+                members: 4,
+                maxMembers: 8,
+                status: "open",
+                joined: false,
+                memberAvatars: ["CH", "EM", "IS", "TRY"]
+            }
+        ];
+
+        let currentChatGroup = null;
+        let messages = {
+            3: [
+                { sender: "Maria", message: "¡Hola! ¿Cómo están todos?", own: false },
+                { sender: "You", message: "¡Muy bien! Ready for today's practice?", own: true },
+                { sender: "Carlos", message: "Sí, let's practice the past tense today", own: false }
+            ]
+        };
+
+        function renderGroups(groups, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            groups.forEach(group => {
+                const card = document.createElement('div');
+                card.className = 'group-card';
+                
+                const actionButtons = getGroupActionButtons(group);
+                
+                card.innerHTML = `
+                    <div class="group-header">
+                        <div>
+                            <h3 class="group-name">${group.name}</h3>
+                            <p class="group-subject">${group.subject}</p>
+                        </div>
+                        <div class="group-status status-${group.status}">
+                            ${group.status.charAt(0).toUpperCase() + group.status.slice(1)}
+                        </div>
+                    </div>
+                    
+                    <div class="group-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Members</span>
+                            <span class="meta-value">${group.members}/${group.maxMembers}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Subject</span>
+                            <span class="meta-value">${group.subject}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="group-description">
+                        ${group.description}
+                    </div>
+                    
+                    <div class="group-members">
+                        ${group.memberAvatars.slice(0, 6).map(avatar => 
+                            `<div class="member-avatar">${avatar}</div>`
+                        ).join('')}
+                        ${group.members > 6 ? `<div class="member-avatar">+${group.members - 6}</div>` : ''}
+                    </div>
+                    
+                    <div class="group-actions">
+                        ${actionButtons}
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function getGroupActionButtons(group) {
+            if (group.joined) {
+                return `
+                    <button class="action-btn chat-btn" onclick="openChat(${group.id})">💬 Chat</button>
+                    <button class="action-btn leave-btn" onclick="leaveGroup(${group.id})">Leave</button>
+                `;
+            } else if (group.status === 'full') {
+                return `
+                    <button class="action-btn view-btn" disabled>Full</button>
+                `;
+            } else {
+                return `
+                    <button class="action-btn join-btn" onclick="joinGroup(${group.id})">Join Group</button>
+                    <button class="action-btn view-btn" onclick="viewGroup(${group.id})">View Details</button>
+                `;
+            }
+        }
+
+        function joinGroup(groupId) {
+            const group = studyGroups.find(g => g.id === groupId);
+            group.joined = true;
+            group.status = 'joined';
+            group.members += 1;
+            group.memberAvatars.push('YOU');
+            
+            renderAllGroups();
+            alert(`Successfully joined ${group.name}!`);
+        }
+
+        function leaveGroup(groupId) {
+            if (confirm('Are you sure you want to leave this group?')) {
+                const group = studyGroups.find(g => g.id === groupId);
+                group.joined = false;
+                group.status = group.members > group.maxMembers ? 'full' : 'open';
+                group.members -= 1;
+                group.memberAvatars = group.memberAvatars.filter(a => a !== 'YOU');
+                
+                renderAllGroups();
+                alert(`Left ${group.name}`);
+            }
+        }
+
+        function openChat(groupId) {
+            currentChatGroup = groupId;
+            const group = studyGroups.find(g => g.id === groupId);
+            
+            // Switch to chat tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-tab="chat"]').classList.add('active');
+            
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('chat').classList.add('active');
+            
+            // Update chat header
+            document.getElementById('chatGroupName').textContent = group.name;
+            
+            // Load messages
+            loadChatMessages(groupId);
+            renderChatGroups();
+        }
+
+        function loadChatMessages(groupId) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const groupMessages = messages[groupId] || [];
+            
+            messagesContainer.innerHTML = '';
+            
+            groupMessages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.own ? 'own' : 'other'}`;
+                messageDiv.innerHTML = `
+                    ${!msg.own ? `<div class="message-sender">${msg.sender}</div>` : ''}
+                    <div>${msg.message}</div>
+                `;
+                messagesContainer.appendChild(messageDiv);
+            });
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message && currentChatGroup) {
+                if (!messages[currentChatGroup]) {
+                    messages[currentChatGroup] = [];
+                }
+                
+                messages[currentChatGroup].push({
+                    sender: 'You',
+                    message: message,
+                    own: true
+                });
+                
+                input.value = '';
+                loadChatMessages(currentChatGroup);
+            }
+        }
+
+        function renderChatGroups() {
+            const container = document.getElementById('chatGroupsList');
+            const joinedGroups = studyGroups.filter(g => g.joined);
+            
+            container.innerHTML = '';
+            
+            joinedGroups.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.style.cssText = 'padding: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer;';
+                groupDiv.innerHTML = `
+                    <div style="font-weight: bold;">${group.name}</div>
+                    <div style="font-size: 0.8rem; opacity: 0.8;">${group.subject}</div>
+                `;
+                groupDiv.onclick = () => openChat(group.id);
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function openCreateModal() {
+            document.getElementById('createModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('createModal').style.display = 'none';
+            document.getElementById('createGroupForm').reset();
+        }
+
+        function viewGroup(groupId) {
+            const group = studyGroups.find(g => g.id === groupId);
+            alert(`Group: ${group.name}\nSubject: ${group.subject}\nMembers: ${group.members}/${group.maxMembers}\n\nDescription: ${group.description}`);
+        }
+
+        function renderAllGroups() {
+            renderGroups(studyGroups, 'discoverGrid');
+            renderGroups(studyGroups.filter(g => g.joined), 'myGroupsGrid');
+            renderChatGroups();
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Create group form
+        document.getElementById('createGroupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newGroup = {
+                id: studyGroups.length + 1,
+                name: document.getElementById('groupName').value,
+                subject: document.getElementById('groupSubject').value,
+                description: document.getElementById('groupDescription').value,
+                members: 1,
+                maxMembers: parseInt(document.getElementById('maxMembers').value),
+                status: 'joined',
+                joined: true,
+                memberAvatars: ['YOU']
+            };
+            
+            studyGroups.push(newGroup);
+            renderAllGroups();
+            closeModal();
+            alert('Study group created successfully!');
+        });
+
+        // Message input enter key
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initialize
+        renderAllGroups();
+    </script>
+</body>
+</html>

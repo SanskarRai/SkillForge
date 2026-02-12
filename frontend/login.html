@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .role-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .role-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .role-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .role-subtitle {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .form-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-links a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .form-links a:hover {
+            text-decoration: underline;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: #2c3e50;
+        }
+
+        .demo-info {
+            background: rgba(52, 152, 219, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .demo-info h4 {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .demo-info p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="role-header">
+            <span class="role-icon" id="roleIcon">🎓</span>
+            <h2 class="role-title" id="roleTitle">Student Login</h2>
+            <p class="role-subtitle" id="roleSubtitle">Access your learning dashboard</p>
+        </div>
+
+        <div class="demo-info">
+            <h4>Demo Account:</h4>
+            <p id="demoCredentials">Email: student@demo.com | Password: password</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+
+        <div class="form-links">
+            <a href="register.html" id="registerLink">Don't have an account? Register here</a><br><br>
+            <a href="forgot-password.html">Forgot your password?</a>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="role-selection.html" class="back-btn">← Change Role</a>
+        </div>
+    </div>
+
+    <script src="js/toast.js"></script>
+    <script>
+        // Get selected role from localStorage
+        const selectedRole = localStorage.getItem('selectedRole') || 'student';
+
+        // Role configurations
+        const roleConfig = {
+            student: {
+                icon: '🎓',
+                title: 'Student Login',
+                subtitle: 'Access your learning dashboard',
+                demo: 'Email: student@demo.com | Password: password'
+            },
+            mentor: {
+                icon: '👨🏫',
+                title: 'Mentor Login',
+                subtitle: 'Manage your courses and students',
+                demo: 'Email: mentor@demo.com | Password: password'
+            },
+            guardian: {
+                icon: '👨👩👧👦',
+                title: 'Guardian Login',
+                subtitle: 'Monitor your child\'s progress',
+                demo: 'Email: guardian@demo.com | Password: password'
+            },
+            admin: {
+                icon: '⚙️',
+                title: 'Admin Login',
+                subtitle: 'Platform administration panel',
+                demo: 'Email: admin@demo.com | Password: password'
+            }
+        };
+
+        // Update UI based on selected role
+        const config = roleConfig[selectedRole];
+        document.getElementById('roleIcon').textContent = config.icon;
+        document.getElementById('roleTitle').textContent = config.title;
+        document.getElementById('roleSubtitle').textContent = config.subtitle;
+        document.getElementById('demoCredentials').textContent = config.demo;
+
+        // Update register link
+        document.getElementById('registerLink').href = `register.html`;
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                console.log('Attempting backend login with:', { email, password, role: selectedRole });
+
+                // Try backend login first
+                const response = await fetch('http://localhost:8080/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password, role: selectedRole })
+                });
+
+                console.log('Backend response status:', response.status);
+                const data = await response.json();
+                console.log('Backend response data:', data);
+
+                if (response.ok && data.status === 200) {
+                    console.log('✅ Backend login successful!');
+                    toast.success('Login successful! Redirecting to dashboard...');
+
+                    // Store user data from backend response
+                    localStorage.setItem('userRole', selectedRole);
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('authToken', data.data.token);
+                    localStorage.setItem('userId', data.data.userId);
+
+                    // Store studentCode if present (for students)
+                    if (data.data.studentCode) {
+                        localStorage.setItem('studentCode', data.data.studentCode);
+                    }
+
+                    // Store grade if present (for students)
+                    if (data.data.grade) {
+                        localStorage.setItem('studentGrade', data.data.grade);
+                    }
+
+                    // Redirect to role-specific dashboard
+                    setTimeout(() => {
+                        window.location.href = `${selectedRole}-dashboard.html`;
+                    }, 1500);
+                    return;
+                } else {
+                    console.log('❌ Backend login failed:', data.message);
+                    toast.error(data.message || 'Login failed. Please check your credentials.');
+                    return;
+                }
+            } catch (error) {
+                console.log('❌ Backend connection failed:', error);
+                toast.error('Cannot connect to server. Please try again later.');
+                return;
+            }
+
+            // If backend login fails, show error
+            toast.error('Login failed. Please check your credentials and try again.');
+        });
+    </script>
+</body>
+
+</html>

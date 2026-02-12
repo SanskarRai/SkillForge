@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Tracker - SkillForge</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            padding: 30px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #9b59b6, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .metric-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .metric-change {
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .positive { color: #2ecc71; }
+        .negative { color: #e74c3c; }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .achievements-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .achievement-badge:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .achievement-badge.unlocked {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+
+        .achievement-badge.locked {
+            opacity: 0.5;
+        }
+
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .badge-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .badge-description {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .goals-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .goal-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .goal-title {
+            font-weight: bold;
+        }
+
+        .goal-percentage {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .goal-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .goal-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .time-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #9b59b6;
+        }
+
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">SkillForge</div>
+        <a href="student-dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Progress Tracker</h1>
+
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-icon">⏱️</div>
+                <div class="metric-value">47.5</div>
+                <div class="metric-label">Hours This Week</div>
+                <div class="metric-change positive">+12% from last week</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🎯</div>
+                <div class="metric-value">78%</div>
+                <div class="metric-label">Average Score</div>
+                <div class="metric-change positive">+5% from last month</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">📚</div>
+                <div class="metric-value">12</div>
+                <div class="metric-label">Lessons Completed</div>
+                <div class="metric-change positive">+3 this week</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🏆</div>
+                <div class="metric-value">8</div>
+                <div class="metric-label">Achievements Unlocked</div>
+                <div class="metric-change positive">+2 this month</div>
+            </div>
+        </div>
+
+        <div class="time-filter">
+            <button class="filter-btn active" data-period="week">This Week</button>
+            <button class="filter-btn" data-period="month">This Month</button>
+            <button class="filter-btn" data-period="year">This Year</button>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3 class="chart-title">Learning Progress</h3>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Subject Performance</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Study Time Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="timeChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Skill Development</h3>
+                <div class="chart-container">
+                    <canvas id="skillChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="achievements-section">
+            <h2 class="section-title">🏆 Achievements</h2>
+            <div class="achievements-grid">
+                <div class="achievement-badge unlocked">
+                    <div class="badge-icon">🎓</div>
+                    <div class="badge-title">First Course</div>
+                    <div class="badge-description">Complete your first course</div>
+                </div>
+                <div class="achievement-badge unlocked">
+                    <div class="badge-icon">⚡</div>
+                    <div class="badge-title">Speed Learner</div>
+                    <div class="badge-description">Complete 5 lessons in one day</div>
+                </div>
+                <div class="achievement-badge unlocked">
+                    <div class="badge-icon">🔥</div>
+                    <div class="badge-title">7-Day Streak</div>
+                    <div class="badge-description">Study for 7 consecutive days</div>
+                </div>
+                <div class="achievement-badge locked">
+                    <div class="badge-icon">💎</div>
+                    <div class="badge-title">Perfect Score</div>
+                    <div class="badge-description">Get 100% on 5 assignments</div>
+                </div>
+                <div class="achievement-badge locked">
+                    <div class="badge-icon">🌟</div>
+                    <div class="badge-title">Master Student</div>
+                    <div class="badge-description">Complete 10 courses</div>
+                </div>
+                <div class="achievement-badge locked">
+                    <div class="badge-icon">👑</div>
+                    <div class="badge-title">Top Performer</div>
+                    <div class="badge-description">Rank in top 10% of class</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="goals-section">
+            <h2 class="section-title">🎯 Learning Goals</h2>
+            <div class="goal-item">
+                <div class="goal-header">
+                    <div class="goal-title">Complete Python Course</div>
+                    <div class="goal-percentage">65%</div>
+                </div>
+                <div class="goal-progress">
+                    <div class="goal-fill" style="width: 65%"></div>
+                </div>
+            </div>
+            <div class="goal-item">
+                <div class="goal-header">
+                    <div class="goal-title">Study 20 Hours This Month</div>
+                    <div class="goal-percentage">80%</div>
+                </div>
+                <div class="goal-progress">
+                    <div class="goal-fill" style="width: 80%"></div>
+                </div>
+            </div>
+            <div class="goal-item">
+                <div class="goal-header">
+                    <div class="goal-title">Achieve 85% Average Score</div>
+                    <div class="goal-percentage">92%</div>
+                </div>
+                <div class="goal-progress">
+                    <div class="goal-fill" style="width: 92%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart configurations
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: 'white' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    ticks: { color: 'white' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        };
+
+        // Progress Chart
+        const progressCtx = document.getElementById('progressChart').getContext('2d');
+        new Chart(progressCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Hours Studied',
+                    data: [2, 4, 3, 6, 5, 7, 4],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+
+        // Performance Chart
+        const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Math', 'Science', 'Programming', 'Arts', 'Languages'],
+                datasets: [{
+                    label: 'Current Level',
+                    data: [85, 78, 92, 65, 70],
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                    pointBackgroundColor: '#e74c3c'
+                }, {
+                    label: 'Target Level',
+                    data: [90, 85, 95, 80, 85],
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    pointBackgroundColor: '#2ecc71'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'white' }
+                    }
+                },
+                scales: {
+                    r: {
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: 'white' }
+                    }
+                }
+            }
+        });
+
+        // Time Distribution Chart
+        const timeCtx = document.getElementById('timeChart').getContext('2d');
+        new Chart(timeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Programming', 'Math', 'Science', 'Arts', 'Languages'],
+                datasets: [{
+                    data: [35, 25, 20, 10, 10],
+                    backgroundColor: [
+                        '#3498db',
+                        '#e74c3c',
+                        '#2ecc71',
+                        '#f39c12',
+                        '#9b59b6'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'white' }
+                    }
+                }
+            }
+        });
+
+        // Skill Development Chart
+        const skillCtx = document.getElementById('skillChart').getContext('2d');
+        new Chart(skillCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Problem Solving', 'Critical Thinking', 'Creativity', 'Communication', 'Collaboration'],
+                datasets: [{
+                    label: 'Skill Level',
+                    data: [88, 75, 82, 70, 85],
+                    backgroundColor: [
+                        '#3498db',
+                        '#e74c3c',
+                        '#2ecc71',
+                        '#f39c12',
+                        '#9b59b6'
+                    ]
+                }]
+            },
+            options: chartOptions
+        });
+
+        // Time filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update charts based on selected period
+                updateChartsForPeriod(this.dataset.period);
+            });
+        });
+
+        function updateChartsForPeriod(period) {
+            // This would typically fetch new data from the backend
+            console.log(`Updating charts for period: ${period}`);
+        }
+    </script>
+</body>
+</html>

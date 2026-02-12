@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .profile-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            gap: 0;
+            height: calc(100vh - 80px);
+            overflow: hidden;
+        }
+
+        .chat-history-sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .new-chat-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .sessions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .session-item {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .session-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .session-item.active {
+            background: rgba(52, 152, 219, 0.2);
+            border-left-color: #3498db;
+        }
+
+        .session-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .session-time {
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .chat-content-wrapper {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .chat-section {
+            flex: 2;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            line-height: 1.6;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: rgba(52, 152, 219, 0.15);
+            border-bottom-left-radius: 5px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: rgba(46, 204, 113, 0.2);
+            border-bottom-right-radius: 5px;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            gap: 15px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 15px 25px;
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #3498db;
+        }
+
+        .send-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            background: #2980b9;
+        }
+
+        .insights-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            max-height: 50%;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f1c40f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .weakness-list {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .weakness-item {
+            background: rgba(231, 76, 60, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid #e74c3c;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .weakness-item:hover {
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        .weakness-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .weakness-desc {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .quiz-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1;
+            display: none;
+            flex-direction: column;
+        }
+
+        .quiz-panel.active {
+            display: flex;
+        }
+
+        .quiz-options {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .quiz-option.selected {
+            background: rgba(52, 152, 219, 0.2);
+            border-color: #3498db;
+        }
+
+        .quiz-option.correct {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: #2ecc71;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: #e74c3c;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.6);
+            margin-right: 15px;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div style="display: flex; align-items: center;">
+            <a href="student-dashboard.html" class="back-link">← Back</a>
+            <a href="index.html" class="logo">SkillForge AI</a>
+        </div>
+        <div class="user-info">
+            <div class="profile-circle">ST</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Chat History Sidebar -->
+        <div class="chat-history-sidebar">
+            <button class="new-chat-btn" onclick="createNewSession()">+ New Chat</button>
+            <div class="sessions-list" id="sessionsList">
+                <!-- Sessions will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Chat Content Wrapper -->
+        <div class="chat-content-wrapper">
+            <!-- Chat Section -->
+            <div class="chat-section">
+                <div class="chat-header">
+                    <span style="font-size: 1.5rem;">🤖</span>
+                    <div>
+                        <div class="chat-title">AI Learning Assistant</div>
+                        <div style="font-size: 0.8rem; opacity: 0.7;">Always here to help you learn</div>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will appear here -->
+                    <div class="message bot">
+                        Hello! I'm your AI Tutor. I can help you understand complex concepts, answer your doubts, or
+                        generate quizzes based on your weak areas. How can I help you today?
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="userInput" placeholder="Ask a doubt or request a quiz..."
+                        onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+
+            <!-- Insights & Quiz Section -->
+            <div class="insights-section">
+                <div class="panel" id="insightsPanel">
+                    <div class="panel-header">
+                        <span>⚠️</span> Weakness Areas
+                    </div>
+                    <div class="weakness-list" id="weaknessList">
+                        <div style="text-align: center; color: #aaa; margin-top: 20px;">Loading insights...</div>
+                    </div>
+                </div>
+
+                <div class="quiz-panel" id="quizPanel">
+                    <div class="panel-header">
+                        <span>📝</span> Personalized Quiz
+                        <button onclick="closeQuiz()"
+                            style="margin-left: auto; background: none; border: none; color: white; cursor: pointer;">✕</button>
+                    </div>
+                    <div id="quizContent">
+                        <!-- Quiz content loaded here -->
+                    </div>
+                    <button id="submitQuizBtn" onclick="submitQuiz()"
+                        style="margin-top: 20px; padding: 10px; background: #2ecc71; border: none; border-radius: 5px; color: white; cursor: pointer; display: none;">Submit
+                        Answer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/toast.js"></script>
+    <script>
+        const studentId = localStorage.getItem('userId');
+        const API_BASE_URL = 'http://localhost:8080';
+        let currentSessionId = null;
+        let sessions = [];
+        let currentQuiz = null;
+        let currentQuestionIndex = 0;
+        let selectedOptionIndex = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Init API
+            window.api = new APIService();
+            loadSessions();
+            loadInsights();
+        });
+
+        // Load all chat sessions for the student
+        async function loadSessions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat/sessions/student/${studentId}`);
+                const data = await response.json();
+
+                if (data.status === 200 && data.data) {
+                    sessions = data.data;
+                    renderSessions();
+
+                    // If no session exists, create a new one
+                    if (sessions.length === 0) {
+                        await createNewSession();
+                    } else {
+                        // Load the most recent session
+                        loadSession(sessions[0].id);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+            }
+        }
+
+        // Render sessions list in sidebar
+        function renderSessions() {
+            const sessionsList = document.getElementById('sessionsList');
+            sessionsList.innerHTML = '';
+
+            sessions.forEach(session => {
+                const sessionItem = document.createElement('div');
+                sessionItem.className = `session-item ${session.id === currentSessionId ? 'active' : ''}`;
+                sessionItem.onclick = () => loadSession(session.id);
+
+                const timeAgo = getTimeAgo(session.updatedAt);
+
+                sessionItem.innerHTML = `
+                    <div class="session-title">${session.title}</div>
+                    <div class="session-time">${timeAgo}</div>
+                `;
+
+                sessionsList.appendChild(sessionItem);
+            });
+        }
+
+        // Create new chat session
+        async function createNewSession() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat/sessions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ studentId: parseInt(studentId) })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 201) {
+                    const newSession = data.data;
+                    sessions.unshift(newSession);
+                    currentSessionId = newSession.id;
+
+                    // Clear chat messages
+                    document.getElementById('chatMessages').innerHTML = `
+                        <div class="message bot">
+                            Hello! I'm your AI Tutor. I can help you understand complex concepts, answer your doubts, or
+                            generate quizzes based on your weak areas. How can I help you today?
+                        </div>
+                    `;
+
+                    renderSessions();
+                }
+            } catch (error) {
+                console.error('Error creating session:', error);
+            }
+        }
+
+        // Load specific session's messages
+        async function loadSession(sessionId) {
+            try {
+                currentSessionId = sessionId;
+                renderSessions(); // Update active state
+
+                const response = await fetch(`${API_BASE_URL}/chat/sessions/${sessionId}/messages`);
+                const data = await response.json();
+
+                if (data.status === 200 && data.data) {
+                    const messagesDiv = document.getElementById('chatMessages');
+                    messagesDiv.innerHTML = '';
+
+                    data.data.forEach(msg => {
+                        addMessage(msg.message, msg.sender, false); // Don't save to DB
+                    });
+
+                    // If no messages, show welcome
+                    if (data.data.length === 0) {
+                        messagesDiv.innerHTML = `
+                            <div class="message bot">
+                                Hello! I'm your AI Tutor. I can help you understand complex concepts, answer your doubts, or
+                                generate quizzes based on your weak areas. How can I help you today?
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading session messages:', error);
+            }
+        }
+
+        // Save message to current session
+        async function saveMessageToSession(sender, message) {
+            if (!currentSessionId) {
+                await createNewSession();
+            }
+
+            try {
+                await fetch(`${API_BASE_URL}/chat/sessions/${currentSessionId}/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sender, message })
+                });
+
+                // Reload sessions to update title and timestamp
+                await loadSessions();
+            } catch (error) {
+                console.error('Error saving message:', error);
+            }
+        }
+
+        // Helper function to calculate time ago
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const date = new Date(timestamp);
+            const seconds = Math.floor((now - date) / 1000);
+
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+            return date.toLocaleDateString();
+        }
+
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            // Add user message
+            addMessage(text, 'user', true); // Save to DB
+            input.value = '';
+
+            // CHECK FOR QUIZ INTENT
+            // Matches: "generate quiz on [topic]", "create a quiz about [topic]", "quiz for [topic]"
+            const quizRegex = /(?:generate|create|make|start)?\s*(?:a\s+)?quiz\s+(?:on|about|for)\s+(.+)/i;
+            const match = text.match(quizRegex);
+
+            if (match && match[1]) {
+                const topic = match[1].trim();
+                const botResponse = "Sure! Generating a personalized quiz on " + topic + " for you...";
+                addMessage(botResponse, 'bot', true);
+                startQuiz(topic);
+                return;
+            }
+
+            // Show typing indicator? (skipped for simplicity)
+
+            try {
+                const response = await window.api.chatWithAi(studentId, text);
+                if (response.success) {
+                    addMessage(response.data, 'bot', true); // Save bot response
+                } else {
+                    addMessage("Sorry, I encountered an error. Please try again.", 'bot', true);
+                }
+            } catch (e) {
+                console.error(e);
+                addMessage("Network error. Please check your connection.", 'bot', true);
+            }
+        }
+
+        function parseMarkdownToHTML(text) {
+            // Convert markdown to HTML
+            let html = text;
+
+            // Headers (### Header -> <h3>)
+            html = html.replace(/^### (.+)$/gm, '<h3 style="font-size: 1.1rem; font-weight: bold; margin: 15px 0 10px 0; color: #3498db;">$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2 style="font-size: 1.2rem; font-weight: bold; margin: 18px 0 12px 0; color: #2ecc71;">$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1 style="font-size: 1.3rem; font-weight: bold; margin: 20px 0 15px 0; color: #f39c12;">$1</h1>');
+
+            // Bold text (**text** or __text__)
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #ecf0f1; font-weight: 600;">$1</strong>');
+            html = html.replace(/__(.+?)__/g, '<strong style="color: #ecf0f1; font-weight: 600;">$1</strong>');
+
+            // Italic text (*text* or _text_)
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+
+            // Bullet points (- item or * item)
+            html = html.replace(/^\* (.+)$/gm, '<li style="margin-left: 20px; margin-bottom: 6px;">$1</li>');
+            html = html.replace(/^- (.+)$/gm, '<li style="margin-left: 20px; margin-bottom: 6px;">$1</li>');
+
+            // Numbered lists (1. item, 2. item, etc.)
+            html = html.replace(/^\d+\. (.+)$/gm, '<li style="margin-left: 20px; margin-bottom: 6px;">$1</li>');
+
+            // Wrap consecutive <li> items in <ul> or <ol>
+            html = html.replace(/(<li[^>]*>.*<\/li>\s*)+/gs, match => {
+                return '<ul style="margin: 10px 0; padding-left: 10px; list-style-position: inside;">' + match + '</ul>';
+            });
+
+            // Convert newlines to <br> for paragraph breaks
+            html = html.replace(/\n\n/g, '<br><br>');
+            html = html.replace(/\n/g, '<br>');
+
+            return html;
+        }
+
+        function addMessage(text, sender, saveToDb = true) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+
+            // Parse markdown for bot messages
+            if (sender === 'bot') {
+                msgDiv.innerHTML = parseMarkdownToHTML(text);
+            } else {
+                msgDiv.textContent = text;
+            }
+
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Save to database if requested
+            if (saveToDb) {
+                saveMessageToSession(sender, text);
+            }
+        }
+
+        async function loadInsights() {
+            const list = document.getElementById('weaknessList');
+            try {
+                const response = await window.api.getStudentInsights(studentId);
+                if (response.success && response.data.length > 0) {
+                    list.innerHTML = '';
+                    response.data.forEach(insight => {
+                        const item = document.createElement('div');
+                        item.className = 'weakness-item';
+                        item.innerHTML = `
+                            <div class="weakness-title">${insight.insightTitle}</div>
+                            <div class="weakness-desc">${insight.insightDescription}</div>
+                            <div style="margin-top: 8px; font-size: 0.8rem; color: #fff; text-decoration: underline;">Generate Quiz</div>
+                        `;
+                        item.onclick = () => startQuiz(insight.insightTitle);
+                        list.appendChild(item);
+                    });
+                } else {
+                    list.innerHTML = '<div style="padding: 10px; opacity: 0.7;">No weakness areas detected yet! Keep up the good work.</div>';
+                }
+            } catch (e) {
+                list.innerHTML = '<div style="color: red;">Failed to load insights.</div>';
+            }
+        }
+
+        async function startQuiz(topic) {
+            // Hide insights, show quiz
+            document.getElementById('insightsPanel').style.display = 'none';
+            const quizPanel = document.getElementById('quizPanel');
+            quizPanel.classList.add('active');
+
+            const quizContent = document.getElementById('quizContent');
+            quizContent.innerHTML = '<div style="text-align:center;">Generating quiz for ' + topic + '...</div>';
+
+            try {
+                const response = await window.api.generateQuiz(studentId, topic);
+                if (response.success) {
+                    currentQuiz = response.data;
+                    currentQuestionIndex = 0;
+                    renderQuestion();
+                } else {
+                    quizContent.innerHTML = 'Error generating quiz.';
+                }
+            } catch (e) {
+                quizContent.innerHTML = 'Error generating quiz.';
+            }
+        }
+
+        function renderQuestion() {
+            if (!currentQuiz || currentQuestionIndex >= currentQuiz.questions.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = currentQuiz.questions[currentQuestionIndex];
+            const quizContent = document.getElementById('quizContent');
+            selectedOptionIndex = null;
+            document.getElementById('submitQuizBtn').style.display = 'block';
+            document.getElementById('submitQuizBtn').textContent = 'Submit Answer';
+            document.getElementById('submitQuizBtn').onclick = submitQuiz;
+
+            let html = `
+                <div style="margin-bottom: 10px; font-size: 0.9rem; opacity: 0.7;">Question ${currentQuestionIndex + 1}/${currentQuiz.questions.length}</div>
+                <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 15px;">${q.question}</div>
+                <div class="quiz-options">
+            `;
+
+            q.options.forEach((opt, idx) => {
+                html += `<div class="quiz-option" id="opt-${idx}" onclick="selectOption(${idx})">${opt}</div>`;
+            });
+
+            html += `</div>`;
+            quizContent.innerHTML = html;
+        }
+
+        function selectOption(idx) {
+            // clear previous selection
+            document.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`opt-${idx}`).classList.add('selected');
+            selectedOptionIndex = idx;
+        }
+
+        function submitQuiz() {
+            if (selectedOptionIndex === null) return;
+
+            const q = currentQuiz.questions[currentQuestionIndex];
+            const isCorrect = selectedOptionIndex === q.correctAnswer;
+
+            const selectedEl = document.getElementById(`opt-${selectedOptionIndex}`);
+
+            if (isCorrect) {
+                selectedEl.classList.add('correct');
+                // Could call API to record success
+            } else {
+                selectedEl.classList.add('incorrect');
+                document.getElementById(`opt-${q.correctAnswer}`).classList.add('correct');
+            }
+
+            const btn = document.getElementById('submitQuizBtn');
+            btn.textContent = 'Next Question';
+            btn.onclick = nextQuestion;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+
+        function finishQuiz() {
+            document.getElementById('quizContent').innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <h3>Quiz Completed! 🎉</h3>
+                    <p>Good job working on your weaknesses.</p>
+                    <button onclick="closeQuiz()" style="margin-top: 15px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">Back to Insights</button>
+                </div>
+            `;
+            document.getElementById('submitQuizBtn').style.display = 'none';
+        }
+
+        function closeQuiz() {
+            document.getElementById('quizPanel').classList.remove('active');
+            document.getElementById('insightsPanel').style.display = 'flex';
+            currentQuiz = null;
+        }
+    </script>
+</body>
+
+</html>

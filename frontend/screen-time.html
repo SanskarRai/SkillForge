@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Time Control - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #8e44ad, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .alert-box {
+            background: rgba(231, 76, 60, 0.15);
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="guardian-dashboard.html" class="logo">SkillForge Guardian</a>
+    </header>
+
+    <div class="main-container">
+        <a href="guardian-dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">Screen Time Control</h1>
+        <p style="opacity: 0.7; margin-bottom: 20px;">Smart guidance, not policing</p>
+
+        <div id="screenTimeData">
+            <div class="stat-card">
+                <h3>📊 Today's Usage</h3>
+                <p style="font-size: 2rem; margin: 15px 0; color: #2ecc71;">3h 24m</p>
+                <p style="opacity: 0.8;">Productive: 2h 45m • Idle: 39m</p>
+            </div>
+
+            <div class="alert-box">
+                <strong>💡 Burnout Detection:</strong> No concerns - Breaks taken regularly
+            </div>
+
+            <div style="opacity: 0.6; text-align: center; padding: 40px;">
+                Feature coming soon! Adaptive screen time tracking, burnout detection, and focus mode will be available
+                here.
+                <br><br>
+                <strong>Ethical Controls Only:</strong> No device spying, no force-lock
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const studentId = new URLSearchParams(window.location.search).get('studentId');
+        console.log('Screen Time Control - Student ID:', studentId);
+    </script>
+</body>
+
+</html>

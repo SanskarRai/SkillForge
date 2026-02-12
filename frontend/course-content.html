@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Content - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .course-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            width: 35%;
+            transition: width 0.3s ease;
+        }
+
+        .back-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 350px;
+            height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+
+        .content-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sidebar Styles */
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .lesson-list {
+            padding: 0;
+        }
+
+        .lesson-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lesson-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .lesson-item.active {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid #3498db;
+        }
+
+        .lesson-icon {
+            font-size: 1.2rem;
+        }
+
+        .lesson-info {
+            flex: 1;
+        }
+
+        .lesson-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .lesson-duration {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .lesson-status {
+            font-size: 0.8rem;
+        }
+
+        /* Content Area Styles */
+        .video-section {
+            flex: 1;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .video-title {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .notes-section {
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .notes-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .download-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .notes-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* Chat Panel Styles */
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-tab {
+            padding: 8px 15px;
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .chat-tab.active {
+            background: #3498db;
+            border-color: #3498db;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 10px 12px;
+            border-radius: 15px;
+            max-width: 80%;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .message.bot {
+            background: rgba(52, 152, 219, 0.2);
+            align-self: flex-start;
+        }
+
+        .message.user {
+            background: rgba(46, 204, 113, 0.2);
+            align-self: flex-end;
+        }
+
+        .message.general {
+            background: rgba(155, 89, 182, 0.2);
+            align-self: flex-start;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .chat-panel {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="course-info">
+            <div class="course-title" id="courseTitle">Advanced Calculus Mastery</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span id="progressText">35% Complete</span>
+        </div>
+        <a href="my-courses.html" class="back-btn">← Back to Courses</a>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Course Content</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">12 Lessons • 25 hours</div>
+            </div>
+            <div class="lesson-list" id="lessonList">
+                <!-- Lessons will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <div class="video-section">
+                <div class="video-placeholder">
+                    <div>🎥</div>
+                    <div class="video-title" id="videoTitle">Introduction to Limits</div>
+                </div>
+                <div class="video-controls">
+                    <button class="control-btn" onclick="previousLesson()">⏮️ Previous</button>
+                    <button class="control-btn" onclick="togglePlay()">▶️ Play</button>
+                    <button class="control-btn" onclick="nextLesson()">Next ⏭️</button>
+                </div>
+            </div>
+
+            <div class="notes-section">
+                <div class="notes-header">
+                    <div class="notes-title">📝 Lesson Notes</div>
+                    <button class="download-btn" onclick="downloadNotes()">📥 Download PDF</button>
+                </div>
+                <div class="notes-content" id="notesContent">
+                    <h4>Introduction to Limits</h4>
+                    <p>In this lesson, we'll explore the fundamental concept of limits in calculus. Limits help us
+                        understand the behavior of functions as they approach specific values.</p>
+                    <br>
+                    <p><strong>Key Points:</strong></p>
+                    <ul>
+                        <li>Definition of a limit</li>
+                        <li>Left-hand and right-hand limits</li>
+                        <li>Limit notation and properties</li>
+                        <li>Common limit theorems</li>
+                    </ul>
+                    <br>
+                    <p><strong>Practice Problems:</strong> Complete exercises 1-10 in your workbook.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                <button class="chat-tab active" onclick="switchChat('assistant')">🤖 AI Assistant</button>
+                <button class="chat-tab" onclick="switchChat('general')">💬 General Chat</button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be populated by JavaScript -->
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput"
+                    placeholder="Ask a question or start a discussion..." onkeypress="handleChatInput(event)">
+            </div>
+        </div>
+    </div>
+
+    <script src="js/toast.js"></script>
+    <script>
+        // Course data
+        let currentCourse = null;
+        let courseLessons = [];
+        let currentLessonIndex = 0;
+        let currentChatMode = 'assistant';
+        const studentId = localStorage.getItem('userId');
+
+        // Initialize page
+        function initializePage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('courseId');
+
+            if (!studentId) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (courseId) {
+                loadCourseData(courseId);
+                loadLessons(courseId);
+            }
+
+            initializeChat();
+        }
+
+        // Load course data
+        async function loadCourseData(courseId) {
+            try {
+                const response = await fetch(`http://localhost:8080/courses/${courseId}`);
+                const data = await response.json();
+
+                if (data.status === 200 && data.data) {
+                    currentCourse = data.data;
+                    document.getElementById('courseTitle').textContent = currentCourse.title;
+                }
+            } catch (error) {
+                console.error('Error loading course:', error);
+            }
+        }
+
+        // Load lessons
+        async function loadLessons(courseId) {
+            try {
+                const response = await fetch(`http://localhost:8080/courses/${courseId}/materials`);
+                const data = await response.json();
+
+                if (data.status === 200 && data.data) {
+                    courseLessons = data.data.sort((a, b) => a.order - b.order);
+
+                    // Recover progress from local storage
+                    const progressKey = `course_progress_${studentId}_${courseId}`;
+                    const savedProgress = JSON.parse(localStorage.getItem(progressKey)) || [];
+
+                    // Update lesson statuses
+                    courseLessons.forEach((lesson, index) => {
+                        if (savedProgress.includes(lesson.id)) {
+                            lesson.status = 'completed';
+                            lesson.icon = '✅';
+                        } else if (index === 0 || courseLessons[index - 1].status === 'completed') {
+                            lesson.status = 'unlocked'; // Ready to start
+                            lesson.icon = '▶️';
+                            // If it's the first unlocked one, make it current
+                            if (currentLessonIndex === 0 && index > 0) currentLessonIndex = index;
+                        } else {
+                            lesson.status = 'locked';
+                            lesson.icon = '🔒';
+                        }
+                    });
+
+                    // If all locked (except first), ensure first is current
+                    if (courseLessons.length > 0 && courseLessons[0].status === 'locked') {
+                        courseLessons[0].status = 'unlocked';
+                        courseLessons[0].icon = '▶️';
+                    }
+
+                    renderLessons();
+                    selectLesson(currentLessonIndex);
+                }
+            } catch (error) {
+                console.error('Error loading lessons:', error);
+            }
+        }
+
+        // Render lessons in sidebar
+        function renderLessons() {
+            const lessonList = document.getElementById('lessonList');
+            lessonList.innerHTML = '';
+
+            courseLessons.forEach((lesson, index) => {
+                const isActive = index === currentLessonIndex;
+                const statusClass = lesson.status === 'locked' ? 'opacity-50' : '';
+
+                const lessonItem = document.createElement('div');
+                lessonItem.className = `lesson-item ${isActive ? 'active' : ''} ${statusClass}`;
+                lessonItem.onclick = () => selectLesson(index);
+
+                // Truncate title if too long
+                const title = lesson.title.length > 35 ? lesson.title.substring(0, 35) + '...' : lesson.title;
+
+                lessonItem.innerHTML = `
+                    <div class="lesson-icon">${lesson.icon}</div>
+                    <div class="lesson-info">
+                        <div class="lesson-title">${title}</div>
+                        <div class="lesson-status" style="font-size: 0.7rem; opacity: 0.6; text-transform: capitalize;">${lesson.status}</div>
+                    </div>
+                `;
+
+                lessonList.appendChild(lessonItem);
+            });
+
+            updateProgress();
+        }
+
+        // Select lesson
+        function selectLesson(index) {
+            if (index < 0 || index >= courseLessons.length) return;
+
+            const lesson = courseLessons[index];
+
+            if (lesson.status === 'locked') {
+                toast.warning('Complete previous lessons to unlock this content');
+                return;
+            }
+
+            currentLessonIndex = index;
+            renderLessons();
+            updateContent(lesson);
+        }
+
+        // Update content area
+        function updateContent(lesson) {
+            // Video
+            document.getElementById('videoTitle').textContent = lesson.title;
+            const videoContainer = document.querySelector('.video-placeholder');
+
+            if (lesson.videoUrl) {
+                // Check if YouTube
+                let embedUrl = lesson.videoUrl;
+                const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+                const match = lesson.videoUrl.match(youtubeRegex);
+
+                if (match && match[1]) {
+                    const videoId = match[1];
+                    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                    videoContainer.innerHTML = `
+                        <div style="position: relative; width: 100%; height: 100%;">
+                            <iframe width="100%" height="100%" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <div style="margin-top: 10px; background: rgba(52, 73, 94, 0.8); padding: 10px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 0.9rem; margin-bottom: 5px; color: #ecf0f1;">Video not playing? Restriction issue?</div>
+                                <a href="${lesson.videoUrl}" target="_blank" style="
+                                    display: inline-block; 
+                                    background: #e74c3c; 
+                                    color: white; 
+                                    text-decoration: none; 
+                                    padding: 8px 16px; 
+                                    border-radius: 4px; 
+                                    font-weight: bold;
+                                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                                ">▶ OPEN DIRECTLY IN YOUTUBE</a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Generic video link or placeholder
+                    videoContainer.innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 20px;">🎥</div>
+                            <h3>${lesson.title}</h3>
+                            <a href="${lesson.videoUrl}" target="_blank" class="control-btn" style="display: inline-block; margin-top: 15px;">Open Video</a>
+                        </div>
+                    `;
+                }
+            } else {
+                videoContainer.innerHTML = `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;"><div>🎥</div><div class="video-title">${lesson.title}</div></div>`;
+            }
+
+            // Notes
+            const notesContent = document.getElementById('notesContent');
+            notesContent.innerHTML = lesson.notes ?
+                `<h4>${lesson.title}</h4><br><div style="white-space: pre-wrap;">${lesson.notes}</div>` :
+                `<p style="opacity: 0.6;">No notes available for this lesson.</p>`;
+
+            // PDF Download
+            const downloadBtn = document.querySelector('.download-btn');
+            if (lesson.pdfUrl) {
+                downloadBtn.style.display = 'block';
+                downloadBtn.onclick = () => window.open(lesson.pdfUrl, '_blank');
+            } else {
+                downloadBtn.style.display = 'none';
+            }
+        }
+
+        // Update progress UI
+        function updateProgress() {
+            if (courseLessons.length === 0) return;
+            const completedCount = courseLessons.filter(l => l.status === 'completed').length;
+            const progress = Math.round((completedCount / courseLessons.length) * 100);
+
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `${progress}% Complete`;
+        }
+
+        // Navigation Controls
+        function previousLesson() {
+            if (currentLessonIndex > 0) {
+                selectLesson(currentLessonIndex - 1);
+            }
+        }
+
+        function nextLesson() {
+            // Mark current as completed
+            const currentLesson = courseLessons[currentLessonIndex];
+            if (currentLesson.status !== 'completed') {
+                currentLesson.status = 'completed';
+                currentLesson.icon = '✅';
+
+                // Save progress
+                const progressKey = `course_progress_${studentId}_${currentCourse.id}`;
+                const savedProgress = JSON.parse(localStorage.getItem(progressKey)) || [];
+                if (!savedProgress.includes(currentLesson.id)) {
+                    savedProgress.push(currentLesson.id);
+                    localStorage.setItem(progressKey, JSON.stringify(savedProgress));
+                }
+
+                // Unlock next
+                if (currentLessonIndex + 1 < courseLessons.length) {
+                    const next = courseLessons[currentLessonIndex + 1];
+                    if (next.status === 'locked') {
+                        next.status = 'unlocked';
+                        next.icon = '▶️';
+                    }
+                }
+
+                toast.success('Lesson completed!');
+            }
+
+            if (currentLessonIndex < courseLessons.length - 1) {
+                selectLesson(currentLessonIndex + 1);
+            } else {
+                renderLessons(); // Just update UI if last lesson
+                toast.success('Course Completed! 🎉');
+            }
+        }
+
+        function togglePlay() {
+            // Placeholder for custom player controls if needed
+            toast.info('Playing video...');
+        }
+
+        // Chat functionality (kept as is, but simplified for brevity in this replacement if needed, 
+        // but I will preserve the existing chat logic functions if they were outside the block, 
+        // wait - the block I'm replacing covers the entire script section?
+        // No, I should check the start line.
+        // The original script start line was 406.
+        // I'll keep the chat logic helper functions if they are useful, but re-implementing `initializeChat` inside the script block is fine.
+        // Actually, my replacement content didn't include the chat logic implementation! 
+        // I need to be careful. The chat logic was lines 584-669.
+        // My replacement ends at line 672.
+        // I MUST include the chat logic in my replacement or I will delete it.
+
+        function initializeChat() {
+            const messages = [
+                { type: 'bot', text: 'Hello! I\'m your AI assistant. Feel free to ask me any questions about the course content.' },
+                { type: 'bot', text: 'You can ask about limits, derivatives, or any calculus concepts you\'re struggling with.' }
+            ];
+
+            displayMessages(messages);
+        }
+
+        function switchChat(mode) {
+            currentChatMode = mode;
+            document.querySelectorAll('.chat-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (mode === 'assistant') {
+                initializeChat();
+            } else {
+                displayMessages([
+                    { type: 'general', text: 'Welcome to the general discussion! Connect with other students here.' },
+                    { type: 'user', text: 'Hi everyone! Anyone else finding limits challenging?' }
+                ]);
+            }
+        }
+
+        function displayMessages(messages) {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+            messages.forEach(message => {
+                const div = document.createElement('div');
+                div.className = `message ${message.type}`;
+                div.textContent = message.text;
+                chatMessages.appendChild(div);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('chatInput');
+                const message = input.value.trim();
+
+                if (message) {
+                    const chatMessages = document.getElementById('chatMessages');
+
+                    // User Message
+                    const userMessage = document.createElement('div');
+                    userMessage.className = 'message user';
+                    userMessage.textContent = message;
+                    chatMessages.appendChild(userMessage);
+
+                    input.value = '';
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    if (currentChatMode === 'assistant') {
+                        // Show typing indicator
+                        const loadingDiv = document.createElement('div');
+                        loadingDiv.className = 'message bot';
+                        loadingDiv.textContent = 'Thinking...';
+                        loadingDiv.id = 'ai-loading';
+                        chatMessages.appendChild(loadingDiv);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                        try {
+                            const response = await fetch('http://localhost:8080/api/ai/chat', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    studentId: localStorage.getItem('userId') || 1, // Fallback ID
+                                    query: message
+                                })
+                            });
+
+                            const data = await response.json();
+
+                            // Remove loading
+                            const loader = document.getElementById('ai-loading');
+                            if (loader) loader.remove();
+
+                            const botMessage = document.createElement('div');
+                            botMessage.className = 'message bot';
+
+                            if (data.status === 200 && data.data) {
+                                // Simple markdown formatting removal/parsing could be added here
+                                botMessage.innerHTML = data.data.replace(/\n/g, '<br>');
+                            } else {
+                                botMessage.textContent = "I'm having trouble connecting to my brain right now. Please try again.";
+                            }
+
+                            chatMessages.appendChild(botMessage);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                        } catch (error) {
+                            console.error('AI Chat Error:', error);
+                            const loader = document.getElementById('ai-loading');
+                            if (loader) loader.remove();
+
+                            const errorMessage = document.createElement('div');
+                            errorMessage.className = 'message bot';
+                            errorMessage.textContent = "Sorry, I couldn't reach the server.";
+                            chatMessages.appendChild(errorMessage);
+                        }
+                    } else {
+                        // General chat (mock specific)
+                        setTimeout(() => {
+                            const botMessage = document.createElement('div');
+                            botMessage.className = 'message bot';
+                            botMessage.textContent = "This is a general chat room. Other students will see your message here.";
+                            chatMessages.appendChild(botMessage);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }, 1000);
+                    }
+                }
+            }
+        }
+
+        // Initialize page when loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+
+</html>

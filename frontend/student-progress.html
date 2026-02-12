@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Progress - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-container {
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .course-selector {
+            margin-bottom: 30px;
+        }
+
+        .course-select {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            min-width: 300px;
+            outline: none;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e67e22;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            opacity: 0.8;
+        }
+
+        .students-table {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(230, 126, 34, 0.2);
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+
+        .status-completed {
+            background: rgba(52, 152, 219, 0.3);
+            color: #3498db;
+        }
+
+        .status-inactive {
+            background: rgba(149, 165, 166, 0.3);
+            color: #95a5a6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.7;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.6;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="mentor-dashboard.html" class="logo">SkillForge Mentor</a>
+    </header>
+
+    <div class="main-container">
+        <a href="mentor-dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">Student Progress Tracker</h1>
+
+        <div class="course-selector">
+            <label style="display: block; margin-bottom: 10px; font-weight: bold;">Select Course:</label>
+            <select class="course-select" id="courseSelect" onchange="loadStudents()">
+                <option value="">Loading courses...</option>
+            </select>
+        </div>
+
+        <div id="statsContainer" class="stats-cards" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-number" id="totalStudents">0</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeStudents">0</div>
+                <div class="stat-label">Active Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgProgress">0%</div>
+                <div class="stat-label">Avg Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedStudents">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+
+        <div id="studentsContainer">
+            <div class="loading">Select a course to view students</div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        const mentorId = localStorage.getItem('userId');
+        let courses = [];
+
+        async function loadMentorCourses() {
+            try {
+                const response = await fetch(`http://localhost:8080/courses/mentor/${mentorId}`);
+                const data = await response.json();
+
+                courses = data.data || [];
+                const select = document.getElementById('courseSelect');
+
+                if (courses.length > 0) {
+                    select.innerHTML = '<option value="">Select a course...</option>' +
+                        courses.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+                } else {
+                    select.innerHTML = '<option value="">No courses found</option>';
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('courseSelect').innerHTML = '<option value="">Error loading courses</option>';
+            }
+        }
+
+        async function loadStudents() {
+            const courseId = document.getElementById('courseSelect').value;
+            const container = document.getElementById('studentsContainer');
+
+            if (!courseId) {
+                container.innerHTML = '<div class="loading">Select a course to view students</div>';
+                document.getElementById('statsContainer').style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = '<div class="loading">Loading students...</div>';
+
+            try {
+                const response = await fetch(`http://localhost:8080/courses/${courseId}/students`);
+                const data = await response.json();
+
+                const students = data.data || [];
+
+                if (students.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <h2>No Students Enrolled Yet</h2>
+                            <p>Students will appear here once they enroll in this course</p>
+                        </div>
+                    `;
+                    document.getElementById('statsContainer').style.display = 'none';
+                    return;
+                }
+
+                // Calculate stats
+                const total = students.length;
+                const active = students.filter(s => s.status === 'ACTIVE').length;
+                const completed = students.filter(s => s.status === 'COMPLETED').length;
+                const avgProgress = Math.round(students.reduce((sum, s) => sum + s.progress, 0) / total);
+
+                document.getElementById('totalStudents').textContent = total;
+                document.getElementById('activeStudents').textContent = active;
+                document.getElementById('avgProgress').textContent = avgProgress + '%';
+                document.getElementById('completedStudents').textContent = completed;
+                document.getElementById('statsContainer').style.display = 'grid';
+
+                // Render table
+                container.innerHTML = `
+                    <div class="students-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                    <th>Enrolled Date</th>
+                                    <th>Last Active</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${students.map(student => `
+                                    <tr>
+                                        <td style="font-weight: bold;">${student.name}</td>
+                                        <td style="opacity: 0.8;">${student.email}</td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div class="progress-bar-container" style="flex: 1;">
+                                                    <div class="progress-bar" style="width: ${student.progress}%"></div>
+                                                </div>
+                                                <span style="min-width: 40px;">${student.progress}%</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge status-${student.status.toLowerCase()}">
+                                                ${student.status}
+                                            </span>
+                                        </td>
+                                        <td>${formatDate(student.enrolledAt)}</td>
+                                        <td>${formatDate(student.enrolledAt)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="loading">Failed to load students</div>';
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Load courses on page load
+        document.addEventListener('DOMContentLoaded', loadMentorCourses);
+    </script>
+</body>
+
+</html>

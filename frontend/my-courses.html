@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Courses - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+        }
+
+        .container {
+            padding: 30px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-overview {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .enrolled-count {
+            color: #3498db;
+        }
+
+        .completed-count {
+            color: #2ecc71;
+        }
+
+        .progress-count {
+            color: #f39c12;
+        }
+
+        .hours-count {
+            color: #e74c3c;
+        }
+
+        .status-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .status-tab {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-tab.active,
+        .status-tab:hover {
+            background: #3498db;
+            border-color: #3498db;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .course-status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .status-not-started {
+            background: rgba(149, 165, 166, 0.8);
+            color: white;
+        }
+
+        .status-in-progress {
+            background: rgba(243, 156, 18, 0.8);
+            color: white;
+        }
+
+        .status-completed {
+            background: rgba(46, 204, 113, 0.8);
+            color: white;
+        }
+
+        .course-thumbnail {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .course-content {
+            padding: 25px;
+        }
+
+        .course-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .course-instructor {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-percentage {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .course-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .meta-label {
+            opacity: 0.7;
+        }
+
+        .meta-value {
+            font-weight: 500;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .details-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .details-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .completed-btn {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .certificate-btn {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.7;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-message {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-submessage {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-tabs {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .course-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">SkillForge</div>
+        <a href="student-dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">My Courses</h1>
+
+        <div class="progress-overview">
+            <div class="overview-stats">
+                <div class="stat-item">
+                    <div class="stat-number enrolled-count" id="enrolledCount">0</div>
+                    <div class="stat-label">Enrolled Courses</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number completed-count" id="completedCount">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number progress-count" id="progressCount">0</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number hours-count" id="hoursCount">0</div>
+                    <div class="stat-label">Hours Learned</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-tabs">
+            <button class="status-tab active" data-status="all">All Courses</button>
+            <button class="status-tab" data-status="not-started">Not Started</button>
+            <button class="status-tab" data-status="in-progress">In Progress</button>
+            <button class="status-tab" data-status="completed">Completed</button>
+        </div>
+
+        <div class="courses-grid" id="coursesGrid">
+            <!-- Courses will be populated by JavaScript -->
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">📚</div>
+            <div class="empty-message">No courses enrolled yet</div>
+            <div class="empty-submessage">Start your learning journey by browsing our course catalog</div>
+            <a href="browse-courses.html" class="action-btn continue-btn"
+                style="display: inline-block; margin-top: 20px; text-decoration: none;">Browse Courses</a>
+        </div>
+    </div>
+
+    <script src="js/toast.js"></script>
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8080';
+        const userId = localStorage.getItem('userId');
+
+        let enrolledCourses = [];
+        let currentFilter = 'all';
+
+        // Fetch enrolled courses from backend
+        async function fetchEnrolledCourses() {
+            if (!userId) {
+                console.error('No user ID found in localStorage');
+                enrolledCourses = [];
+                updateStats();
+                renderCourses();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/enrollments/student/${userId}`);
+                const data = await response.json();
+
+                console.log('Enrollment API response:', data);
+
+                // Handle successful response with enrollments
+                if (data.status === 200 && data.data && Array.isArray(data.data)) {
+                    enrolledCourses = data.data.map(enrollment => ({
+                        id: enrollment.courseId || enrollment.course?.id || enrollment.id,
+                        enrollmentId: enrollment.id,
+                        title: enrollment.courseTitle || enrollment.course?.title || 'Untitled Course',
+                        instructor: enrollment.mentorName || enrollment.course?.mentorName || 'Instructor',
+                        thumbnail: getCategoryEmoji(enrollment.courseCategory || enrollment.course?.category),
+                        progress: enrollment.progress || 0,
+                        status: getStatusFromProgress(enrollment.progress || 0),
+                        lastAccessed: enrollment.lastAccessedAt || enrollment.enrolledAt || new Date().toISOString().split('T')[0],
+                        hoursSpent: Math.floor((enrollment.progress || 0) / 10), // Estimate hours from progress
+                        totalHours: enrollment.estimatedHours || enrollment.course?.estimatedHours || 10,
+                        nextLesson: enrollment.currentLesson || 'Start Learning',
+                        enrolledAt: enrollment.enrolledAt
+                    }));
+
+                    console.log(`✅ Loaded ${enrolledCourses.length} enrolled courses`);
+                } else {
+                    // No enrollments or empty array
+                    console.log('📭 No enrollments found for this student');
+                    enrolledCourses = [];
+                }
+
+                updateStats();
+                renderCourses();
+            } catch (error) {
+                console.error('❌ Error fetching enrolled courses:', error);
+                enrolledCourses = [];
+                updateStats();
+                renderCourses();
+            }
+        }
+
+        function getCategoryEmoji(category) {
+            const emojis = {
+                'MATHEMATICS': '📊',
+                'SCIENCE': '🔬',
+                'PROGRAMMING': '💻',
+                'ARTS': '🎨',
+                'LANGUAGES': '🌍',
+                'BUSINESS': '💼',
+                'DESIGN': '🎨',
+                'MARKETING': '📈',
+                'DATA_SCIENCE': '📉',
+                'OTHER': '📚'
+            };
+            return emojis[category?.toUpperCase()] || '📚';
+        }
+
+        function getStatusFromProgress(progress) {
+            if (progress === 0) return 'not-started';
+            if (progress >= 100) return 'completed';
+            return 'in-progress';
+        }
+
+        function updateStats() {
+            const enrolled = enrolledCourses.length;
+            const completed = enrolledCourses.filter(c => c.status === 'completed').length;
+            const inProgress = enrolledCourses.filter(c => c.status === 'in-progress').length;
+            const totalHours = enrolledCourses.reduce((sum, c) => sum + c.hoursSpent, 0);
+
+            document.getElementById('enrolledCount').textContent = enrolled;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('progressCount').textContent = inProgress;
+            document.getElementById('hoursCount').textContent = totalHours;
+        }
+
+        function renderCourses() {
+            const grid = document.getElementById('coursesGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            let filteredCourses = enrolledCourses;
+            if (currentFilter !== 'all') {
+                filteredCourses = enrolledCourses.filter(course => course.status === currentFilter);
+            }
+
+            if (filteredCourses.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            grid.innerHTML = '';
+
+            filteredCourses.forEach(course => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card';
+
+                const statusText = {
+                    'not-started': 'Not Started',
+                    'in-progress': 'In Progress',
+                    'completed': 'Completed'
+                };
+
+                const actionButtons = course.status === 'completed'
+                    ? `<button class="action-btn certificate-btn" onclick="downloadCertificate(${course.id})">
+                         📜 Certificate
+                       </button>
+                       <button class="action-btn details-btn" onclick="viewDetails(${course.id})">
+                         📋 Details
+                       </button>`
+                    : `<button class="action-btn continue-btn" onclick="continueLearning(${course.id})">
+                         ${course.status === 'not-started' ? '▶️ Start' : '📖 Continue'}
+                       </button>
+                       <button class="action-btn details-btn" onclick="viewDetails(${course.id})">
+                         📋 Details
+                       </button>`;
+
+                courseCard.innerHTML = `
+                    <div class="course-status-badge status-${course.status}">
+                        ${statusText[course.status]}
+                    </div>
+                    <div class="course-thumbnail">${course.thumbnail}</div>
+                    <div class="course-content">
+                        <h3 class="course-title">${course.title}</h3>
+                        <p class="course-instructor">by ${course.instructor}</p>
+                        
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <span>Progress</span>
+                                <span class="progress-percentage">${course.progress}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${course.progress}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="course-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Time Spent</span>
+                                <span class="meta-value">${course.hoursSpent}h / ${course.totalHours}h</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Last Accessed</span>
+                                <span class="meta-value">${course.lastAccessed ? new Date(course.lastAccessed).toLocaleDateString() : 'Never'}</span>
+                            </div>
+                            ${course.status !== 'completed' ? `
+                            <div class="meta-item">
+                                <span class="meta-label">Next Lesson</span>
+                                <span class="meta-value">${course.nextLesson}</span>
+                            </div>` : ''}
+                        </div>
+                        
+                        <div class="course-actions">
+                            ${actionButtons}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(courseCard);
+            });
+        }
+
+        function continueLearning(courseId) {
+            // Navigate to course content page
+            window.location.href = `course-content.html?courseId=${courseId}`;
+        }
+
+        function viewDetails(courseId) {
+            // Navigate to course details page
+            window.location.href = `course-details.html?courseId=${courseId}`;
+        }
+
+        function downloadCertificate(courseId) {
+            const course = enrolledCourses.find(c => c.id === courseId);
+            toast.success(`Certificate for "${course.title}" downloaded successfully!`);
+
+            // Simulate certificate download
+            const link = document.createElement('a');
+            link.href = '#';
+            link.download = `${course.title.replace(/\s+/g, '_')}_Certificate.pdf`;
+            link.click();
+        }
+
+        // Event listeners for status tabs
+        document.querySelectorAll('.status-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                currentFilter = this.dataset.status;
+                renderCourses();
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchEnrolledCourses();
+        });
+    </script>
+</body>
+
+</html>

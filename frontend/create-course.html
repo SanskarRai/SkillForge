@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Course - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .main-container {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #e67e22;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #2ecc71;
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2ecc71;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-draft {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-draft:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-publish {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-publish:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        /* Fix for dropdown options visibility */
+        .form-select option {
+            background-color: #000000;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="mentor-dashboard.html" class="logo">SkillForge Mentor</a>
+        <div class="user-info">
+            <div class="profile-circle">ME</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <a href="mentor-dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1 class="page-title">Create New Course</h1>
+
+        <div class="form-card">
+            <form id="createCourseForm" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label class="form-label">Course Title</label>
+                    <input type="text" class="form-input" id="title" placeholder="e.g., Advanced Java Programming"
+                        required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="category" required>
+                            <option value="">Select Category</option>
+                            <option value="PROGRAMMING">Programming</option>
+                            <option value="DATA_SCIENCE">Data Science</option>
+                            <option value="DESIGN">Design</option>
+                            <option value="MARKETING">Marketing</option>
+                            <option value="BUSINESS">Business</option>
+                            <option value="LANGUAGES">Languages</option>
+                            <option value="MATHEMATICS">Mathematics</option>
+                            <option value="SCIENCE">Science</option>
+                            <option value="ARTS">Arts</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Difficulty</label>
+                        <select class="form-select" id="difficulty" required>
+                            <option value="">Select Difficulty</option>
+                            <option value="BEGINNER">Beginner</option>
+                            <option value="INTERMEDIATE">Intermediate</option>
+                            <option value="ADVANCED">Advanced</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="description"
+                        placeholder="Short description of what students will learn..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Price ($)</label>
+                        <input type="number" class="form-input" id="price" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Grade (Optional)</label>
+                        <select class="form-select" id="targetGrade">
+                            <option value="">All Grades</option>
+                            <option value="6">Grade 6</option>
+                            <option value="7">Grade 7</option>
+                            <option value="8">Grade 8</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 5px;">Leave as "All Grades" if the
+                            course is suitable for everyone</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📚 Course Lessons</label>
+                    <div
+                        style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
+
+                        <div id="materialsList" style="margin-bottom: 20px;">
+                            <!-- Lessons will be added here -->
+                        </div>
+
+                        <div
+                            style="display: flex; flex-direction: column; gap: 10px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Add New Lesson</div>
+
+                            <input type="text" id="lessonTitle" class="form-input"
+                                placeholder="Lesson Title (e.g. Introduction to Limits)">
+
+                            <input type="url" id="videoUrl" class="form-input" placeholder="Video URL (YouTube link)">
+
+                            <textarea id="lessonNotes" class="form-textarea" placeholder="Lesson Notes / Key Points..."
+                                style="min-height: 80px;"></textarea>
+
+                            <input type="url" id="pdfUrl" class="form-input"
+                                placeholder="PDF Notes URL (Optional - Google Drive/Dropbox link)">
+
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button type="button" onclick="addLesson()"
+                                    style="padding: 10px 25px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                    + Add Lesson
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">
+                            💡 Tip: Add lessons in order. Students must complete lessons sequentially.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="toggle-container">
+                        <div>
+                            <div class="form-label" style="margin-bottom: 0;">AI Tutor Integration</div>
+                            <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 5px;">Allow students to use AI for
+                                doubts in this course</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="aiTutor" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="button" class="btn btn-draft" onclick="submitCourse('DRAFT')">Save as Draft</button>
+                    <button type="button" class="btn btn-publish" onclick="submitCourse('PUBLISHED')">Publish
+                        Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/toast.js"></script>
+    <script>
+        const mentorId = localStorage.getItem('userId');
+        let courseLessons = [];
+
+        function addLesson() {
+            const title = document.getElementById('lessonTitle').value;
+            const videoUrl = document.getElementById('videoUrl').value;
+            const notes = document.getElementById('lessonNotes').value;
+            const pdfUrl = document.getElementById('pdfUrl').value;
+
+            if (!title || !videoUrl) {
+                toast.error('Please provide at least a Title and Video URL');
+                return;
+            }
+
+            courseLessons.push({
+                title,
+                type: 'LESSON',
+                videoUrl,
+                url: videoUrl, // Fallback
+                notes,
+                pdfUrl,
+                order: courseLessons.length
+            });
+
+            renderLessonsList();
+
+            // Clear inputs
+            document.getElementById('lessonTitle').value = '';
+            document.getElementById('videoUrl').value = '';
+            document.getElementById('lessonNotes').value = '';
+            document.getElementById('pdfUrl').value = '';
+
+            toast.success('Lesson added!');
+        }
+
+        function removeLesson(index) {
+            courseLessons.splice(index, 1);
+            renderLessonsList();
+        }
+
+        function renderLessonsList() {
+            const list = document.getElementById('materialsList');
+            list.innerHTML = '';
+
+            courseLessons.forEach((lesson, idx) => {
+                lesson.order = idx; // Update order
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #3498db;';
+
+                div.innerHTML = `
+                    <div>
+                        <div style="font-weight: bold; font-size: 1.1rem;">${idx + 1}. ${lesson.title}</div>
+                        <div style="font-size: 0.85rem; opacity: 0.7; margin-top: 5px;">
+                            🎥 Video: ${lesson.videoUrl ? 'Yes' : 'No'} | 
+                            📝 Notes: ${lesson.notes ? 'Yes' : 'No'} | 
+                            📄 PDF: ${lesson.pdfUrl ? 'Yes' : 'No'}
+                        </div>
+                    </div>
+                    <button onclick="removeLesson(${idx})" style="background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid #e74c3c; padding: 5px 15px; border-radius: 5px; cursor: pointer; transition: all 0.3s;">
+                        Remove
+                    </button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        async function submitCourse(status) {
+            const title = document.getElementById('title').value;
+            const category = document.getElementById('category').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const description = document.getElementById('description').value;
+            const price = document.getElementById('price').value || 0;
+            const aiTutorEnabled = document.getElementById('aiTutor').checked;
+            const targetGradeValue = document.getElementById('targetGrade').value;
+
+            if (!title || !category || !difficulty || !description) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const courseData = {
+                title,
+                category,
+                difficulty,
+                description,
+                price,
+                aiTutorEnabled,
+                status,
+                estimatedHours: 10
+            };
+
+            // Add targetGrade if specified
+            if (targetGradeValue) {
+                courseData.targetGrade = parseInt(targetGradeValue);
+            }
+
+            const btn = status === 'PUBLISHED' ? document.querySelector('.btn-publish') : document.querySelector('.btn-draft');
+            const originalText = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            try {
+                const response = await window.api.createCourse(mentorId, courseData);
+
+                if (response.success) {
+                    const courseId = response.data.id;
+
+                    // Now save materials
+                    if (courseLessons.length > 0) {
+                        let uploadErrors = 0;
+                        for (const lesson of courseLessons) {
+                            try {
+                                const matResponse = await fetch(`http://localhost:8080/courses/${courseId}/materials`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(lesson)
+                                });
+
+                                if (!matResponse.ok) {
+                                    const errData = await matResponse.json().catch(() => ({}));
+                                    console.error('Failed to save lesson:', lesson.title, errData);
+                                    alert(`Failed to save lesson "${lesson.title}". Error: ${errData.message || matResponse.statusText}`);
+                                    uploadErrors++;
+                                }
+                            } catch (e) {
+                                console.error('Error saving lesson:', e);
+                                alert(`Network error saving lesson "${lesson.title}": ${e.message}`);
+                                uploadErrors++;
+                            }
+                        }
+
+                        if (uploadErrors > 0) {
+                            alert(`Course created, but ${uploadErrors} lessons failed to save. Please check backend connection.`);
+                        }
+                    }
+
+                    alert(`Course ${status === 'PUBLISHED' ? 'published' : 'saved'} successfully!`);
+                    window.location.href = 'mentor-dashboard.html';
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Failed to connect to server');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

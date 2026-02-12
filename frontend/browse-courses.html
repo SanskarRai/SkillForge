@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Courses - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+        }
+
+        .container {
+            padding: 30px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-filter-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #3498db;
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-select option {
+            background: #000;
+            color: white;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-tab {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .category-tab.active,
+        .category-tab:hover {
+            background: #3498db;
+            border-color: #3498db;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .course-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .course-content {
+            padding: 20px;
+        }
+
+        .course-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .course-instructor {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stars {
+            color: #f39c12;
+        }
+
+        .course-duration {
+            opacity: 0.7;
+        }
+
+        .course-difficulty {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .difficulty-beginner {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .difficulty-intermediate {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
+
+        .difficulty-advanced {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .course-price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 15px;
+        }
+
+        .enroll-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .enroll-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .enrolled {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-tabs {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">SkillForge</div>
+        <a href="student-dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Browse Courses</h1>
+
+        <div class="search-filter-section">
+            <input type="text" class="search-bar" placeholder="Search for courses..." id="searchInput">
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Subject</label>
+                    <select class="filter-select" id="subjectFilter">
+                        <option value="">All Subjects</option>
+                        <option value="math">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="programming">Programming</option>
+                        <option value="arts">Arts & Design</option>
+                        <option value="languages">Languages</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Difficulty</label>
+                    <select class="filter-select" id="difficultyFilter">
+                        <option value="">All Levels</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Duration</label>
+                    <select class="filter-select" id="durationFilter">
+                        <option value="">Any Duration</option>
+                        <option value="short">Short (< 5 hours)</option>
+                        <option value="medium">Medium (5-20 hours)</option>
+                        <option value="long">Long (20+ hours)</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Price</label>
+                    <select class="filter-select" id="priceFilter">
+                        <option value="">All Prices</option>
+                        <option value="free">Free</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="">All</button>
+            <button class="category-tab" data-category="math">📊 Math</button>
+            <button class="category-tab" data-category="science">🔬 Science</button>
+            <button class="category-tab" data-category="programming">💻 Programming</button>
+            <button class="category-tab" data-category="arts">🎨 Arts</button>
+            <button class="category-tab" data-category="languages">🌍 Languages</button>
+        </div>
+
+        <div class="courses-grid" id="coursesGrid">
+            <!-- Courses will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script src="js/toast.js"></script>
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8080';
+
+        // Get user info from localStorage
+        const userEmail = localStorage.getItem('userEmail');
+        const userId = localStorage.getItem('userId');
+        const studentGrade = localStorage.getItem('studentGrade'); // Get student's grade
+
+        if (!userId) {
+            toast.error('Please login first');
+            window.location.href = 'login.html';
+            // Page will redirect, no need for return
+        }
+
+        const studentId = userId;
+
+        // Mock course data (will be replaced by API calls)
+        let courses = [];
+        let enrolledCourseIds = new Set();
+        let isSearchActive = false; // Track if user is searching
+
+        // Fetch courses from backend
+        async function fetchCourses(includeGradeFilter = true) {
+            try {
+                console.log('🔍 Fetching courses with grade filter:', includeGradeFilter);
+                console.log('📊 Student grade:', studentGrade);
+                console.log('🔎 Search active:', isSearchActive);
+
+                // Build API URL with optional grade filter
+                let apiUrl = `${API_BASE_URL}/courses`;
+
+                // PRODUCTION LOGIC:
+                // 1. If searching -> Show ALL courses (no filter)
+                // 2. If student has NO grade -> Show ALL courses (no filter)
+                // 3. If student HAS grade AND not searching -> Apply grade filter
+
+                if (isSearchActive) {
+                    // Searching - show everything
+                    console.log('📢 SEARCH MODE: Fetching ALL courses');
+                } else if (!studentGrade) {
+                    // No grade set - show everything
+                    console.log('📚 NO GRADE SET: Fetching ALL courses');
+                } else if (includeGradeFilter && studentGrade) {
+                    // Has grade and should filter - apply filter
+                    apiUrl += `?grade=${studentGrade}`;
+                    console.log(`🎯 GRADE FILTER: Fetching courses for Grade ${studentGrade}`);
+                } else {
+                    // Fallback - show everything
+                    console.log('📚 DEFAULT: Fetching ALL courses');
+                }
+
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                console.log('✅ Courses API response:', data);
+
+                if (response.ok && data.status === 200 && data.data) {
+                    courses = data.data.courses.map(course => ({
+                        id: course.id,
+                        title: course.title,
+                        instructor: 'Instructor', // Will be populated from mentor data
+                        subject: course.category.toLowerCase(),
+                        difficulty: course.difficulty.toLowerCase(),
+                        duration: getDurationCategory(course.estimatedHours),
+                        price: course.price != null && course.price > 0 ? course.price : 'free',
+                        rating: course.rating || 4.5,
+                        thumbnail: getCategoryEmoji(course.category),
+                        hours: `${course.estimatedHours || 10} hours`,
+                        enrolled: false,
+                        description: course.description,
+                        targetGrade: course.targetGrade
+                    }));
+
+                    console.log(`📦 Loaded ${courses.length} courses`);
+                } else {
+                    console.log('⚠️ No courses found or API error');
+                    courses = [];
+                }
+
+                await fetchEnrollments();
+                filterCourses(); // Apply current filters to new course list
+            } catch (error) {
+                console.error('❌ Error fetching courses:', error);
+                console.log('⚠️ Failed to load courses');
+                courses = [];
+                filterCourses();
+            }
+        }
+
+        // Fetch student enrollments
+        async function fetchEnrollments() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/enrollments/student/${studentId}`);
+                const data = await response.json();
+                console.log('Enrollments API response:', data);
+
+                if (response.ok && data.status === 200 && data.data) {
+                    enrolledCourseIds = new Set(data.data.map(item => item.enrollment.courseId));
+
+                    // Update enrolled status in courses
+                    courses.forEach(course => {
+                        course.enrolled = enrolledCourseIds.has(course.id);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching enrollments:', error);
+            }
+        }
+
+        // Enroll in course
+        async function enrollInCourse(courseId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/enrollments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: parseInt(studentId),
+                        courseId: courseId
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Enrollment response:', data);
+
+                if (response.ok && data.status === 201) {
+                    enrolledCourseIds.add(courseId);
+                    const course = courses.find(c => c.id === courseId);
+                    if (course) {
+                        course.enrolled = true;
+                    }
+                    renderCourses();
+                    toast.success('Successfully enrolled in course!');
+                } else {
+                    toast.error('Enrollment failed: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error enrolling in course:', error);
+                toast.error('Cannot connect to server. Please try again.');
+            }
+        }
+
+        // Helper functions
+        function getDurationCategory(hours) {
+            if (hours < 5) return 'short';
+            if (hours <= 20) return 'medium';
+            return 'long';
+        }
+
+        function getCategoryEmoji(category) {
+            const emojis = {
+                'MATHEMATICS': '📊',
+                'SCIENCE': '🔬',
+                'PROGRAMMING': '💻',
+                'ARTS': '🎨',
+                'LANGUAGES': '🌍',
+                'BUSINESS': '💼'
+            };
+            return emojis[category.toUpperCase()] || '📚';
+        }
+
+        // No mock data - only real courses from database
+
+        let filteredCourses = [];
+
+        function renderCourses(coursesToRender = filteredCourses) {
+            const grid = document.getElementById('coursesGrid');
+            grid.innerHTML = '';
+
+            coursesToRender.forEach(course => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card';
+                courseCard.innerHTML = `
+                    <div class="course-thumbnail">${course.thumbnail}</div>
+                    <div class="course-content">
+                        <h3 class="course-title">${course.title}</h3>
+                        <p class="course-instructor">by ${course.instructor}</p>
+                        <div class="course-meta">
+                            <div class="course-rating">
+                                <span class="stars">⭐</span>
+                                <span>${course.rating}</span>
+                            </div>
+                            <span class="course-duration">${course.hours}</span>
+                        </div>
+                        <div class="course-difficulty difficulty-${course.difficulty}">
+                            ${course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
+                        </div>
+                        <div class="course-price">${course.price === 'free' ? 'Free' : '$' + course.price}</div>
+                        <button class="enroll-btn ${course.enrolled ? 'enrolled' : ''}" 
+                                onclick="toggleEnrollment(${course.id})" 
+                                ${course.enrolled ? 'disabled' : ''}>
+                            ${course.enrolled ? 'Enrolled ✓' : 'Enroll Now'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(courseCard);
+            });
+        }
+
+        function filterCourses() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const subject = document.getElementById('subjectFilter').value;
+            const difficulty = document.getElementById('difficultyFilter').value;
+            const duration = document.getElementById('durationFilter').value;
+            const price = document.getElementById('priceFilter').value;
+
+            filteredCourses = courses.filter(course => {
+                return (
+                    (search === '' || course.title.toLowerCase().includes(search) ||
+                        course.instructor.toLowerCase().includes(search)) &&
+                    (subject === '' || course.subject === subject) &&
+                    (difficulty === '' || course.difficulty === difficulty) &&
+                    (duration === '' || course.duration === duration) &&
+                    (price === '' || course.price === price)
+                );
+            });
+
+            renderCourses();
+        }
+
+        function toggleEnrollment(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (course && !course.enrolled) {
+                enrollInCourse(courseId);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchValue = this.value.trim();
+            const wasSearchActive = isSearchActive;
+            isSearchActive = searchValue.length > 0;
+
+            // Always refetch when search state changes
+            // This ensures we get fresh data with correct filtering
+            if (isSearchActive !== wasSearchActive) {
+                console.log('🔄 Search state changed, refetching courses...');
+                fetchCourses(true); // Let fetchCourses decide based on isSearchActive
+            } else {
+                // Just filter what we already have
+                filterCourses();
+            }
+        });
+        document.getElementById('subjectFilter').addEventListener('change', filterCourses);
+        document.getElementById('difficultyFilter').addEventListener('change', filterCourses);
+        document.getElementById('durationFilter').addEventListener('change', filterCourses);
+        document.getElementById('priceFilter').addEventListener('change', filterCourses);
+
+        // Category tabs
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const category = this.dataset.category;
+                document.getElementById('subjectFilter').value = category;
+                filterCourses();
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchCourses();
+        });
+    </script>
+</body>
+
+</html>

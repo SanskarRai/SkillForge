@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard - SkillForge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 100000;
+        }
+
+        .profile-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 280px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            z-index: 99999;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeInDown 0.3s ease;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .mentor-id {
+            background: rgba(230, 126, 34, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            border-left: 3px solid #e67e22;
+        }
+
+        .mentor-id-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 3px;
+        }
+
+        .mentor-id-value {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #e67e22;
+        }
+
+        .profile-menu {
+            list-style: none;
+        }
+
+        .profile-menu li {
+            margin-bottom: 8px;
+        }
+
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .profile-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-menu .logout {
+            color: #e74c3c;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 10px;
+            padding-top: 15px;
+        }
+
+        .profile-menu .logout:hover {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(230, 126, 34, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            font-size: 1rem;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: rgba(230, 126, 34, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border-left: 4px solid #e67e22;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e67e22;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .feature-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">SkillForge</div>
+        <div class="user-info">
+            <div class="profile-circle" onclick="toggleProfileDropdown()" id="profileCircle">ME</div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-header">
+                    <div class="profile-name" id="profileName">Mentor Name</div>
+                    <div class="profile-email" id="profileEmail">mentor@demo.com</div>
+                    <div class="mentor-id">
+                        <div class="mentor-id-label">Mentor ID</div>
+                        <div class="mentor-id-value" id="mentorId">MEN-2024-001</div>
+                    </div>
+                </div>
+                <ul class="profile-menu">
+                    <li><a href="my-profile.html">👤 My Profile</a></li>
+                    <li><a href="edit-profile.html">✏️ Edit Profile</a></li>
+                    <li><a href="settings.html">⚙️ Settings</a></li>
+                    <li><a href="#" onclick="logout()" class="logout">🚪 Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1 class="welcome-title">Mentor Dashboard</h1>
+            <p class="welcome-subtitle">Empower students with your knowledge and expertise</p>
+        </div>
+
+        <div class="features-grid">
+            <a href="create-course.html" class="feature-card">
+                <span class="feature-icon">➕</span>
+                <h3 class="feature-title">Create Course</h3>
+                <p class="feature-desc">Design and publish new courses with AI-powered content recommendations</p>
+            </a>
+
+            <a href="manage-courses.html" class="feature-card">
+                <span class="feature-icon">📚</span>
+                <h3 class="feature-title">Manage Courses</h3>
+                <p class="feature-desc">Edit, update, and monitor your existing course content and structure</p>
+            </a>
+
+            <a href="student-progress.html" class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3 class="feature-title">Student Progress</h3>
+                <p class="feature-desc">Track and analyze your students' learning progress and performance</p>
+            </a>
+
+            <a href="grade-assignments.html" class="feature-card">
+                <span class="feature-icon">✅</span>
+                <h3 class="feature-title">Grade Assignments</h3>
+                <p class="feature-desc">Review and provide feedback on student submissions and assessments</p>
+            </a>
+
+            <a href="live-sessions.html" class="feature-card">
+                <span class="feature-icon">🎥</span>
+                <h3 class="feature-title">Live Sessions</h3>
+                <p class="feature-desc">Conduct interactive live classes and Q&A sessions with students</p>
+            </a>
+
+            <a href="mentor-analytics.html" class="feature-card">
+                <span class="feature-icon">📈</span>
+                <h3 class="feature-title">Teaching Analytics</h3>
+                <p class="feature-desc">View detailed insights about your teaching effectiveness and impact</p>
+            </a>
+        </div>
+
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Active Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">156</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4.8</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">23</div>
+                <div class="stat-label">Pending Reviews</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        // Generate mentor ID and initials
+        const userEmail = localStorage.getItem('userEmail') || 'mentor@demo.com';
+        const userName = userEmail.split('@')[0];
+        const initials = userName.substring(0, 2).toUpperCase();
+        const mentorId = 'MEN-2024-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+        // Update profile info
+        document.getElementById('profileCircle').textContent = initials;
+        document.getElementById('profileName').textContent = userName.charAt(0).toUpperCase() + userName.slice(1);
+        document.getElementById('profileEmail').textContent = userEmail;
+        document.getElementById('mentorId').textContent = mentorId;
+
+        // Store mentor ID
+        localStorage.setItem('mentorId', mentorId);
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const profileCircle = document.getElementById('profileCircle');
+
+            if (!dropdown.contains(event.target) && !profileCircle.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>
